@@ -16,7 +16,7 @@ def home():
         risultato = f"""
         <div style="background: #e6fffa; border: 2px solid #319795; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 15px;">
-                <img src="https://i.ibb.co/68zW31y/24215.jpg" alt="Logo Studio Medico d'Élite" style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid #319795; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                <div style="font-size: 45px; margin-bottom: 5px;">🛡️ 💎 🧬</div>
                 <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE</h3>
                 <p style="font-size: 12px; color: #319795; font-weight: bold; margin: 0;">STUDIO MEDICO D'ÉLITE • IL FUTURO DELLA MEDICINA MODERNA</p>
             </div>
@@ -56,14 +56,14 @@ def home():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Studio Medico d'Élite • Piattaforma Globale</title>
-        <!-- Icona Ufficiale con lo Stemma d'Élite per la Schermata Home del Telefono -->
-        <link rel="icon" type="image/jpeg" href="https://i.ibb.co/68zW31y/24215.jpg">
-        <link rel="apple-touch-icon" href="https://i.ibb.co/68zW31y/24215.jpg">
+        <!-- Icona nativa ad alta definizione per la schermata Home -->
+        <link rel="icon" href="https://emojicdn.elk.sh/🛡️">
+        <link rel="apple-touch-icon" href="https://emojicdn.elk.sh/🛡️">
         <style>
             body {{ font-family: Arial, sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 15px; }}
             .container {{ max-width: 650px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
             .brand-header {{ text-align: center; margin-bottom: 20px; }}
-            .brand-logo-img {{ width: 110px; height: 110px; border-radius: 50%; border: 4px solid #319795; object-fit: cover; box-shadow: 0 6px 12px rgba(0,0,0,0.25); margin-bottom: 10px; }}
+            .brand-logo-box {{ font-size: 45px; margin-bottom: 5px; }}
             h1 {{ color: #1a365d; text-align: center; font-size: 22px; margin: 0; }}
             .subtitle {{ text-align: center; color: #666; font-size: 11px; margin-top: 5px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }}
             .section-teal {{ border: 2px solid #319795; border-radius: 8px; padding: 12px; margin-bottom: 15px; background: #e6fffa; }}
@@ -83,7 +83,7 @@ def home():
     <body>
         <div class="container">
             <div class="brand-header">
-                <img src="https://i.ibb.co/68zW31y/24215.jpg" alt="Studio Medico d'Élite Stemma" class="brand-logo-img">
+                <div class="brand-logo-box">🛡️💎🧬</div>
                 <h1>Studio Medico d'Élite</h1>
                 <div class="subtitle">Il Futuro della Medicina Moderna • Puntuale, Preciso, Eccellente</div>
             </div>
