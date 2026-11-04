@@ -4,12 +4,10 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Configurazione della chiave API di Gemini dalle variabili d'ambiente di Render
 api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 
-# Inizializzazione del modello neurale clinico aggiornato
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 HTML_TEMPLATE = """
@@ -102,4 +100,4 @@ def home():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
-        
+    
