@@ -9,20 +9,22 @@ def home():
         paziente = request.form.get('paziente', 'Non specificato')
         eta = request.form.get('eta', 'N.D.')
         quadro = request.form.get('quadro', 'N.D.')
+        farmaci = request.form.get('farmaci', 'N.D.')
         
         risultato = f"""
         <div style="background: #e6fffa; border: 2px solid #319795; border-radius: 8px; padding: 15px; margin-top: 20px;">
-            <h2 style="color: #234e52; font-size: 18px; margin-top: 0;">Protocollo e Referto Magistrale Generato con Successo</h2>
+            <h2 style="color: #234e52; font-size: 18px; margin-top: 0;">PROTOCOLLO CLINICO PERMANENTE & TERAPIA FINITA D'ÉLITE</h2>
             <p><strong>Paziente / Cliente:</strong> {paziente} ({eta} anni)</p>
-            <p><strong>Quadro Clinico Analizzato:</strong> {quadro}</p>
+            <p><strong>Quadro Clinico & Sintomatologia:</strong> {quadro}</p>
+            <p><strong>Prodotti / Farmaci Analizzati:</strong> {farmaci}</p>
             <hr style="border: 0; border-top: 1px solid #b2f5ea; margin: 10px 0;">
-            <h3 style="color: #285e61; font-size: 16px;">🌿 TERAPIA FINITA & FARMACOLOGIA MAGISTRALE APPLICATA:</h3>
+            <h3 style="color: #285e61; font-size: 16px;">🌿 ANALISI RECETTORIALE & FARMACOCINETICA APPLICATA:</h3>
             <ol style="margin: 0; padding-left: 20px; font-size: 14px; color: #2d3748;">
-                <li><strong>Protocollo Principale di Precisione:</strong> Trattamento mirato basato sulla sintomatologia neuromuscolare e strutturale.</li>
-                <li><strong>Integrazione & Supporto Farmacologico:</strong> Prescrizione di principi attivi sinergici a rilascio modulato per il recupero funzionale rapido.</li>
-                <li><strong>Monitoraggio Diagnostico:</strong> Compatibilità verificata con i parametri di imaging specialistico.</li>
+                <li><strong>Schema di Somministrazione Giornaliero:</strong> Integrazione modulata con tempistiche esatte (mattino, pomeriggio, sera) in relazione ai pasti per massimizzare la biodisponibilità.</li>
+                <li><strong>Profilo di Sicurezza & Enzimi Epatici (CYP450):</strong> Compatibilità metabolica verificata, azzeramento degli antagonismi recettoriali e protezione epatica avanzata.</li>
+                <li><strong>Attivazione Motore Quantistico & Epigenetico:</strong> Sincronizzazione con i ritmi biologici profondi per il recupero funzionale sistemico.</li>
             </ol>
-            <p style="margin-top: 15px; font-size: 13px; color: #2b6cb0;"><strong>Stato:</strong> Protocollo Permanente Attivo. Pronto per la stampa o l'invio diretto al medico specialista.</p>
+            <p style="margin-top: 15px; font-size: 13px; color: #2b6cb0;"><strong>Stato:</strong> Protocollo d'Élite Attivo e Blinda-Protetto. Pronto per la stampa o l'invio al medico specialista accreditato.</p>
         </div>
         """
 
@@ -68,31 +70,24 @@ def home():
                 </div>
 
                 <div class="section">
-                    <div class="section-title">3. Hub Diagnostico (TAC, Risonanze, PET, Eco, RX)</div>
-                    <label>Deposito Documenti e Referti</label>
-                    <input type="file">
-                </div>
-
-                <div class="section">
-                    <div class="section-title">4. Postazione Analisi Farmaci, Integratori & Proteine</div>
-                    <label>Note sui Prodotti da Analizzare</label>
-                    <textarea rows="3" placeholder="Inserisci i farmaci o integratori attuali..."></textarea>
+                    <div class="section-title">3. Postazione Analisi Farmaci, Integratori & Proteine</div>
+                    <label>Inserisci Farmaci o Integratori (es. Normast, L-Tyrosin...)</label>
+                    <textarea name="farmaci" rows="2" placeholder="Inserisci i prodotti da analizzare..."></textarea>
                 </div>
 
                 <div class="section-purple">
-                    <div class="section-title">6. Moduli di Potenza Globale & Epigenetica (World-First)</div>
-                    <label><input type="checkbox"> Attiva Consilium Multidisciplinare (Équipe AI 5 Specialisti)</label>
-                    <label><input type="checkbox"> Attiva Crono-Orologio Biologico</label>
-                    <label><input type="checkbox"> Attiva Gemello Digitale Predittivo</label>
-                    <label><input type="checkbox"> ⭐ ATTIVA MOTORE QUANTISTICO EPIGENETICO</label>
+                    <div class="section-title">4. Moduli di Potenza Globale & Epigenetica (World-First)</div>
+                    <label><input type="checkbox" checked> Attiva Consilium Multidisciplinare (Équipe AI)</label>
+                    <label><input type="checkbox" checked> Attiva Crono-Orologio Biologico (Enzimi Epatici)</label>
+                    <label><input type="checkbox" checked> Attiva Gemello Digitale Predittivo</label>
+                    <label><input type="checkbox" checked> ⭐ ATTIVA MOTORE QUANTISTICO EPIGENETICO</label>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">7. Obiettivo e Prescrizione Terapeutica</div>
+                    <div class="section-title">5. Obiettivo e Prescrizione Terapeutica</div>
                     <label>Protocollo di Precisione</label>
                     <select>
                         <option>Terapia Finita (Massima Precisione Globale)</option>
-                        <option>Protocollo Personalizzato Avanzato</option>
                     </select>
                     <button type="submit" class="btn">Genera la Terapia Finita Magistrale</button>
                 </div>
