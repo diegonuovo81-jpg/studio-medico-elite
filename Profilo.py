@@ -22,11 +22,11 @@ def home():
             <p><strong>Trascrizione Vocale / Sintomi Diretti:</strong> {voce_clinica}</p>
             <p><strong>Prodotti / Farmaci Analizzati:</strong> {farmaci}</p>
             <hr style="border: 0; border-top: 1px solid #b2f5ea; margin: 10px 0;">
-            <h3 style="color: #285e61; font-size: 16px;">🌿 ANALISI RECETTORIALE & FARMACOCINETICA APPLICATA:</h3>
+            <h3 style="color: #285e61; font-size: 16px;">🌿 ANALISI RECETTORIALE, EPIGENETICA & FARMACOCINETICA APPLICATA:</h3>
             <ol style="margin: 0; padding-left: 20px; font-size: 14px; color: #2d3748;">
-                <li><strong>Schema di Somministrazione Giornaliero:</strong> Integrazione modulata con tempistiche esatte (mattino, pomeriggio, sera) e relazione con i pasti.</li>
-                <li><strong>Profilo di Sicurezza & Enzimi Epatici (CYP450):</strong> Compatibilità metabolica verificata, azzeramento degli antagonismi recettoriali e protezione epatica avanzata.</li>
-                <li><strong>Attivazione Motore Quantistico & Epigenetico:</strong> Sincronizzazione con i ritmi biologici profondi per il recupero funzionale sistemico.</li>
+                <li><strong>Schema di Somministrazione Giornaliero:</strong> Integrazione crono-biologica modulata con tempistiche esatte (mattino, pomeriggio, sera) in relazione ai pasti.</li>
+                <li><strong>Profilo di Sicurezza & Enzimi Epatici (CYP450):</strong> Compatibilità microsomal-epatica verificata, azzeramento degli antagonismi e protezione epatica avanzata.</li>
+                <li><strong>Attivazione Motore Quantistico & Epigenetico (World-First):</strong> Sincronizzazione profonda con il gemello digitale predittivo e risonanza transgenerazionale per il recupero funzionale sistemico.</li>
             </ol>
             <p style="margin-top: 15px; font-size: 13px; color: #2b6cb0;"><strong>Stato:</strong> Protocollo d'Élite Attivo e Blinda-Protetto. Pronto per la stampa o l'invio al medico specialista accreditato.</p>
         </div>
@@ -75,14 +75,14 @@ def home():
                 <div class="section-orange">
                     <div class="section-title">2. Archivio Storico & Cartelle Cliniche Digitali</div>
                     <label>Storico Terapie & Anamnesi Passata</label>
-                    <textarea name="anamnesi" rows="2" placeholder="Inserisci lo storico delle terapie precedenti, interventi e anamnesi..."></textarea>
-                    <label style="margin-top: 10px;">Deposito Documenti e Referti (TAC, Risonanze, Eco)</label>
+                    <textarea name="anamnesi" rows="2" placeholder="Inserisci lo storico delle terapie precedenti..."></textarea>
+                    <label style="margin-top: 10px;">Hub Diagnostico (TAC, Risonanze, PET, Eco, RX) - Carica Referti</label>
                     <input type="file" name="cartella_clinica">
                 </div>
 
                 <div class="section-blue">
-                    <div class="section-title">3. Quadro Clinico e Sintomatologia / Hub Diagnostico</div>
-                    <label>Descrizione Patologia e Sintomi Attuali</label>
+                    <div class="section-title">3. Quadro Clinico e Sintomatologia Attuale</div>
+                    <label>Descrizione Patologia e Sintomi</label>
                     <textarea name="quadro" rows="3" placeholder="Descrivi il quadro clinico di riferimento..."></textarea>
                 </div>
 
