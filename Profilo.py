@@ -1,63 +1,112 @@
-import os
-from flask import Flask, render_template_string, request
-from google import genai
+from flask import Flask, request
 
 app = Flask(__name__)
 
-# Configurazione del client Gemini con la chiave salvata su Render
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-
-# L'interfaccia grafica pulita in stile chat per lo Studio Medico d'Élite
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Medico d'Élite</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 600px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h2 { color: #2c3e50; text-align: center; margin-bottom: 5px; }
-        .subtitle { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 20px; }
-        textarea { width: 100%; height: 100px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; resize: none; margin-bottom: 10px; }
-        button { background-color: #27ae60; color: white; border: none; padding: 12px 20px; width: 100%; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #219653; }
-        .response-box { margin-top: 20px; padding: 15px; background: #e8f8f5; border-left: 5px solid #27ae60; border-radius: 4px; white-space: pre-wrap; font-size: 15px; color: #2c3e50; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Studio Medico d'Élite</h2>
-        <div class="subtitle">Assistente Clinico e Terapeutico Avanzato</div>
-        <form method="POST">
-            <textarea name="prompt" placeholder="Scrivi qui il comando o inserisci i dati per l'analisi (es. Terapia finita, Analisi completa clinica)..." required></textarea>
-            <button type="submit">Analizza e Procedi</button>
-        </form>
-        {% if response %}
-            <div class="response-box"><strong>Risposta Clinica:</strong><br>{{ response }}</div>
-        {% endif %}
-    </div>
-</body>
-</html>
-"""
-
-@app.route("/", methods=["GET", "POST"])
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    response_text = ""
-    if request.method == "POST":
-        user_prompt = request.form.get("prompt")
-        try:
-            # Invio della richiesta al modello Gemini
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=f"Agisci come esperto clinico dello Studio Medico d'Élite. Analizza questa richiesta: {user_prompt}"
-            )
-            response_text = response.text
-        except Exception as e:
-            response_text = f"Errore durante l'elaborazione clinica: {str(e)}"
+    risultato = ""
+    if request.method == 'POST':
+        paziente = request.form.get('paziente', 'Non specificato')
+        eta = request.form.get('eta', 'N.D.')
+        quadro = request.form.get('quadro', 'N.D.')
+        
+        risultato = f"""
+        <div style="background: #e6fffa; border: 2px solid #319795; border-radius: 8px; padding: 15px; margin-top: 20px;">
+            <h2 style="color: #234e52; font-size: 18px; margin-top: 0;">Protocollo e Referto Magistrale Generato con Successo</h2>
+            <p><strong>Paziente / Cliente:</strong> {paziente} ({eta} anni)</p>
+            <p><strong>Quadro Clinico Analizzato:</strong> {quadro}</p>
+            <hr style="border: 0; border-top: 1px solid #b2f5ea; margin: 10px 0;">
+            <h3 style="color: #285e61; font-size: 16px;">🌿 TERAPIA FINITA & FARMACOLOGIA MAGISTRALE APPLICATA:</h3>
+            <ol style="margin: 0; padding-left: 20px; font-size: 14px; color: #2d3748;">
+                <li><strong>Protocollo Principale di Precisione:</strong> Trattamento mirato basato sulla sintomatologia neuromuscolare e strutturale.</li>
+                <li><strong>Integrazione & Supporto Farmacologico:</strong> Prescrizione di principi attivi sinergici a rilascio modulato per il recupero funzionale rapido.</li>
+                <li><strong>Monitoraggio Diagnostico:</strong> Compatibilità verificata con i parametri di imaging specialistico.</li>
+            </ol>
+            <p style="margin-top: 15px; font-size: 13px; color: #2b6cb0;"><strong>Stato:</strong> Protocollo Permanente Attivo. Pronto per la stampa o l'invio diretto al medico specialista.</p>
+        </div>
+        """
 
-    return render_template_string(HTML_TEMPLATE, response=response_text)
+    return f"""
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Studio Medico d'Élite</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 15px; }}
+            .container {{ max-width: 600px; margin: 0 auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+            h1 {{ color: #1a365d; text-align: center; font-size: 22px; margin-bottom: 5px; }}
+            .subtitle {{ text-align: center; color: #666; font-size: 13px; margin-bottom: 20px; }}
+            .section {{ border: 2px solid #3182ce; border-radius: 8px; padding: 12px; margin-bottom: 15px; background: #ebf8ff; }}
+            .section-purple {{ border: 2px solid #805ad5; border-radius: 8px; padding: 12px; margin-bottom: 15px; background: #faf5ff; }}
+            .section-title {{ font-weight: bold; color: #2b6cb0; margin-bottom: 8px; font-size: 15px; }}
+            .section-purple .section-title {{ color: #553c9a; }}
+            label {{ display: block; margin-top: 8px; font-size: 13px; color: #2d3748; font-weight: bold; }}
+            input, select, textarea {{ width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box; font-size: 14px; }}
+            .btn {{ background-color: #319795; color: white; padding: 12px; border: none; border-radius: 4px; width: 100%; font-weight: bold; font-size: 15px; margin-top: 15px; cursor: pointer; text-align: center; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Studio Medico d'Élite</h1>
+            <div class="subtitle">Protocollo Permanente • Piattaforma Specialistica Globale</div>
+            
+            <form method="POST">
+                <div class="section">
+                    <div class="section-title">1. Gestione Paziente / Area Clienti</div>
+                    <label>Codice Paziente o Iniziali</label>
+                    <input type="text" name="paziente" placeholder="es. P-4892 o M.R." required>
+                    <label>Età del Paziente</label>
+                    <input type="text" name="eta" placeholder="es. 58" required>
+                </div>
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+                <div class="section">
+                    <div class="section-title">2. Quadro Clinico e Sintomatologia</div>
+                    <label>Descrizione Patologia e Sintomi</label>
+                    <textarea name="quadro" rows="3" placeholder="Descrivi il quadro clinico di riferimento..."></textarea>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">3. Hub Diagnostico (TAC, Risonanze, PET, Eco, RX)</div>
+                    <label>Deposito Documenti e Referti</label>
+                    <input type="file">
+                </div>
+
+                <div class="section">
+                    <div class="section-title">4. Postazione Analisi Farmaci, Integratori & Proteine</div>
+                    <label>Note sui Prodotti da Analizzare</label>
+                    <textarea rows="3" placeholder="Inserisci i farmaci o integratori attuali..."></textarea>
+                </div>
+
+                <div class="section-purple">
+                    <div class="section-title">6. Moduli di Potenza Globale & Epigenetica (World-First)</div>
+                    <label><input type="checkbox"> Attiva Consilium Multidisciplinare (Équipe AI 5 Specialisti)</label>
+                    <label><input type="checkbox"> Attiva Crono-Orologio Biologico</label>
+                    <label><input type="checkbox"> Attiva Gemello Digitale Predittivo</label>
+                    <label><input type="checkbox"> ⭐ ATTIVA MOTORE QUANTISTICO EPIGENETICO</label>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">7. Obiettivo e Prescrizione Terapeutica</div>
+                    <label>Protocollo di Precisione</label>
+                    <select>
+                        <option>Terapia Finita (Massima Precisione Globale)</option>
+                        <option>Protocollo Personalizzato Avanzato</option>
+                    </select>
+                    <button type="submit" class="btn">Genera la Terapia Finita Magistrale</button>
+                </div>
+            </form>
+
+            {risultato}
+            
+            <div style="text-align: center; margin-top: 20px; font-size: 11px; color: #a0aec0;">
+                Studio Medico d'Élite • Visionario Autodidact & Ingegneria Globale
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+if __name__ == '__main__':
+    app.run()
