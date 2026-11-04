@@ -16,11 +16,11 @@ def home():
         risultato = f"""
         <div style="background: #e6fffa; border: 2px solid #319795; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 15px;">
-                <span style="font-size: 28px;">💎 🧬</span>
-                <h3 style="color: #234e52; font-size: 18px; margin: 5px 0;">STUDIO MEDICO D'ÉLITE</h3>
-                <p style="font-size: 12px; color: #319795; font-weight: bold; margin: 0;">CERTIFICATO DI TERAPIA FINITA MAGISTRALE</p>
+                <img src="https://i.ibb.co/68zW31y/24215.jpg" alt="Logo Studio Medico d'Élite" style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid #319795; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE</h3>
+                <p style="font-size: 12px; color: #319795; font-weight: bold; margin: 0;">STUDIO MEDICO D'ÉLITE • IL FUTURO DELLA MEDICINA MODERNA</p>
             </div>
-            <p><strong>Curante:</strong> Équipe Specialistica & Motore Neurale Epigenetico</p>
+            <p><strong>Curante:</strong> Dott. Diego Martinez, M.D. & Équipe Specialistica I.A. Magistrale</p>
             <p><strong>Paziente / Cliente:</strong> {paziente} | <strong>Età:</strong> {eta} anni</p>
             <p><strong>Anamnesi & Hub Diagnostico:</strong> {anamnesi}</p>
             <p><strong>Quadro Clinico & Sintomatologia:</strong> {quadro}</p>
@@ -44,7 +44,7 @@ def home():
                 Sincronizzazione profonda con il gemello digitale predittivo. Rivalutazione clinico-strumentale consigliata a 30 giorni.
             </p>
             <p style="margin-top: 20px; font-size: 12px; color: #2b6cb0; text-align: center; font-weight: bold; background: #ebf8ff; padding: 10px; border-radius: 6px;">
-                Stato: Protocollo d'Élite Attivo e Blinda-Protetto. Pronto per la stampa o l'invio al medico specialista.
+                Stato: Protocollo d'Élite Attivo e Blinda-Protetto. Puntuale. Preciso. Eccellente. Pronto per la stampa.
             </p>
         </div>
         """
@@ -56,16 +56,16 @@ def home():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Studio Medico d'Élite • Piattaforma Globale</title>
-        <!-- Icona e Branding d'Élite per Smartphone -->
-        <link rel="icon" href="https://emojicdn.elk.sh/💎">
-        <link rel="apple-touch-icon" href="https://emojicdn.elk.sh/💎">
+        <!-- Icona Ufficiale con lo Stemma d'Élite per la Schermata Home del Telefono -->
+        <link rel="icon" type="image/jpeg" href="https://i.ibb.co/68zW31y/24215.jpg">
+        <link rel="apple-touch-icon" href="https://i.ibb.co/68zW31y/24215.jpg">
         <style>
             body {{ font-family: Arial, sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 15px; }}
             .container {{ max-width: 650px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
             .brand-header {{ text-align: center; margin-bottom: 20px; }}
-            .brand-logo {{ font-size: 40px; margin-bottom: 5px; }}
+            .brand-logo-img {{ width: 110px; height: 110px; border-radius: 50%; border: 4px solid #319795; object-fit: cover; box-shadow: 0 6px 12px rgba(0,0,0,0.25); margin-bottom: 10px; }}
             h1 {{ color: #1a365d; text-align: center; font-size: 22px; margin: 0; }}
-            .subtitle {{ text-align: center; color: #666; font-size: 12px; margin-top: 5px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }}
+            .subtitle {{ text-align: center; color: #666; font-size: 11px; margin-top: 5px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }}
             .section-teal {{ border: 2px solid #319795; border-radius: 8px; padding: 12px; margin-bottom: 15px; background: #e6fffa; }}
             .section-orange {{ border: 2px solid #dd6b20; border-radius: 8px; padding: 12px; margin-bottom: 15px; background: #fffaf0; }}
             .section-blue {{ border: 2px solid #3182ce; border-radius: 8px; padding: 12px; margin-bottom: 15px; background: #ebf8ff; }}
@@ -83,9 +83,9 @@ def home():
     <body>
         <div class="container">
             <div class="brand-header">
-                <div class="brand-logo">💎🧬</div>
+                <img src="https://i.ibb.co/68zW31y/24215.jpg" alt="Studio Medico d'Élite Stemma" class="brand-logo-img">
                 <h1>Studio Medico d'Élite</h1>
-                <div class="subtitle">Protocollo Permanente • Piattaforma Specialistica Globale</div>
+                <div class="subtitle">Il Futuro della Medicina Moderna • Puntuale, Preciso, Eccellente</div>
             </div>
             
             <form method="POST" enctype="multipart/form-data">
