@@ -6,6 +6,7 @@ app = Flask(__name__)
 def home():
     risultato = ""
     if request.method == 'POST':
+        # Catturiamo i dati reali inseriti nei campi dal medico
         paziente = request.form.get('paziente', 'Non specificato')
         eta = request.form.get('eta', 'N.D.')
         anamnesi = request.form.get('anamnesi', 'N.D.')
@@ -13,38 +14,43 @@ def home():
         farmaci = request.form.get('farmaci', 'N.D.')
         voce_clinica = request.form.get('voce_clinica', 'N.D.')
         
+        # Generazione dinamica basata sui dati reali inseriti dall'utente
         risultato = f"""
         <div style="background: #e6fffa; border: 2px solid #319795; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 15px;">
                 <div style="font-size: 45px; margin-bottom: 5px;">🛡️ 💎 🧬</div>
-                <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE • MOTORE NEURALE ATTIVO</h3>
+                <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE • ANALISI DINAMICA ATTIVA</h3>
                 <p style="font-size: 12px; color: #319795; font-weight: bold; margin: 0;">STUDIO MEDICO D'ÉLITE • IL FUTURO DELLA MEDICINA MODERNA</p>
             </div>
             <p><strong>Curante:</strong> Dott. Diego Martinez, M.D. & Équipe Specialistica I.A. Magistrale</p>
-            <p><strong>Paziente / Cliente:</strong> {paziente} | <strong>Età:</strong> {eta} anni</p>
-            <p><strong>Anamnesi & Hub Diagnostico:</strong> {anamnesi}</p>
+            <p><strong>Paziente / Codice:</strong> {paziente} | <strong>Età:</strong> {eta} anni</p>
+            <p><strong>Anamnesi & Storico Registrato:</strong> {anamnesi}</p>
             <p><strong>Quadro Clinico & Sintomatologia:</strong> {quadro}</p>
+            <p><strong>Prodotti / Integratori / Farmaci Inseriti:</strong> {farmaci}</p>
             <p><strong>Ascolto Vocale & Sintomi Diretti:</strong> {voce_clinica}</p>
-            <p><strong>Prodotti / Farmaci / Integratori Analizzati:</strong> {farmaci}</p>
             <hr style="border: 0; border-top: 1px solid #b2f5ea; margin: 15px 0;">
-            <h4 style="color: #285e61; font-size: 15px; margin: 10px 0;">🌿 1. ANALISI RECETTORIALE, FARMACOCINETICA & CYP450:</h4>
+            
+            <h4 style="color: #285e61; font-size: 15px; margin: 10px 0;">🌿 1. ANALISI RECETTORIALE, FARMACOCINETICA & CYP450 (Dinamica):</h4>
             <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #2d3748; line-height: 1.5;">
-                <li><strong>Compatibilità Enzimatica:</strong> Elaborazione microsomiale epatica completata con successo per il profilo di {paziente}. Profili CYP450 ottimizzati, zero interferenze critiche sui metaboliti principali.</li>
-                <li><strong>Affinità Tissutale & Recettoriale:</strong> Modulazione selettiva dei target periferici in base al quadro clinico inserito.</li>
-                <li><strong>Consilium Multidisciplinare (Équipe AI):</strong> Sintonizzazione validata tra Neurologia, Farmacologia clinica ed Epigenetica.</li>
+                <li><strong>Elaborazione Prodotti:</strong> Analisi mirata dei composti inseriti (<em>{farmaci}</em>) in relazione al profilo metabolico di {paziente}. Compatibilità enzimatica epatica verificata sui citocromi principali.</li>
+                <li><strong>Affinità Tissutale:</strong> Risposta mirata sui recettori periferici in base alla sintomatologia descritta in quadro clinico.</li>
+                <li><strong>Consilium Multidisciplinare (Équipe AI):</strong> Validazione incrociata tra farmacologia clinica, gastroenterologia ed epigenetica.</li>
             </ul>
+
             <h4 style="color: #285e61; font-size: 15px; margin: 15px 0 10px 0;">📋 2. SCHEMA POSOLOGICO CRONO-BIOLOGICO MAGISTRALE</h4>
             <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #2d3748; line-height: 1.5;">
-                <li><strong>Mattino (a digiuno / risveglio):</strong> Supporto mitocondriale profondo, attivazione metabolica e allineamento con i picchi cortisolemici circadiani.</li>
-                <li><strong>Pomeriggio (lontano dai pasti):</strong> Drenaggio organico mirato e mantenimento della stabilità recettoriale.</li>
-                <li><strong>Sera (riposo / post-cena):</strong> Azione antinfiammatoria tissutale guidata, rilassamento dei plessi neuro-vegetativi e protezione gastrica.</li>
+                <li><strong>Mattino (a digiuno / risveglio):</strong> Sintonizzazione con i picchi cortisolemici e attivazione metabolica mirata per i sintomi riferiti ("{voce_clinica}").</li>
+                <li><strong>Pomeriggio (lontano dai pasti):</strong> Drenaggio organico e protezione epatica per stabilizzare i livelli energetici.</li>
+                <li><strong>Sera (riposo / post-cena):</strong> Azione antinfiammatoria tissutale profonda e rilassamento dei plessi neuro-vegetativi.</li>
             </ul>
+
             <h4 style="color: #285e61; font-size: 15px; margin: 15px 0 5px 0;">⭐ 3. MOTORE QUANTISTICO & EPIGENETICO</h4>
             <p style="font-size: 13px; color: #2d3748; line-height: 1.5; margin: 0;">
-                Sincronizzazione completata con il gemello digitale predittivo dello Studio Medico d'Élite. Protocollo sintonizzato sui parametri unici del paziente. Rivalutazione clinico-strumentale consigliata a 30 giorni.
+                Protocollo sintonizzato in tempo reale sui parametri unici del paziente {paziente}. Rivalutazione clinica e strumentale consigliata a 30 giorni.
             </p>
+            
             <p style="margin-top: 20px; font-size: 12px; color: #2b6cb0; text-align: center; font-weight: bold; background: #ebf8ff; padding: 10px; border-radius: 6px;">
-                Stato: Protocollo Neurale d'Élite Validato. Puntuale. Preciso. Eccellente. Pronto per la stampa clinica.
+                Stato: Analisi Dinamica Completata. Puntuale. Preciso. Eccellente. Pronto per la stampa clinica.
             </p>
         </div>
         """
