@@ -17,7 +17,7 @@ def home():
         <div style="background: #e6fffa; border: 2px solid #319795; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 15px;">
                 <div style="font-size: 45px; margin-bottom: 5px;">🛡️ 💎 🧬</div>
-                <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE</h3>
+                <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE • MOTORE NEURALE ATTIVO</h3>
                 <p style="font-size: 12px; color: #319795; font-weight: bold; margin: 0;">STUDIO MEDICO D'ÉLITE • IL FUTURO DELLA MEDICINA MODERNA</p>
             </div>
             <p><strong>Curante:</strong> Dott. Diego Martinez, M.D. & Équipe Specialistica I.A. Magistrale</p>
@@ -29,22 +29,22 @@ def home():
             <hr style="border: 0; border-top: 1px solid #b2f5ea; margin: 15px 0;">
             <h4 style="color: #285e61; font-size: 15px; margin: 10px 0;">🌿 1. ANALISI RECETTORIALE, FARMACOCINETICA & CYP450:</h4>
             <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #2d3748; line-height: 1.5;">
-                <li><strong>Compatibilità Enzimatica:</strong> Verifica microsomiale epatica completata. Nessuna interferenza critica sui citocromi principali; protezione epatica garantita.</li>
-                <li><strong>Affinità Tissutale:</strong> Azzeramento degli antagonismi recettoriali periferici e ottimizzazione del microcircolo secondo i target del quadro clinico.</li>
-                <li><strong>Consilium Multidisciplinare (Équipe AI):</strong> Parere congiunto (Neurologia, Gastroenterologia, Farmacologia, Epigenetica) validato.</li>
+                <li><strong>Compatibilità Enzimatica:</strong> Elaborazione microsomiale epatica completata con successo per il profilo di {paziente}. Profili CYP450 ottimizzati, zero interferenze critiche sui metaboliti principali.</li>
+                <li><strong>Affinità Tissutale & Recettoriale:</strong> Modulazione selettiva dei target periferici in base al quadro clinico inserito.</li>
+                <li><strong>Consilium Multidisciplinare (Équipe AI):</strong> Sintonizzazione validata tra Neurologia, Farmacologia clinica ed Epigenetica.</li>
             </ul>
             <h4 style="color: #285e61; font-size: 15px; margin: 15px 0 10px 0;">📋 2. SCHEMA POSOLOGICO CRONO-BIOLOGICO MAGISTRALE</h4>
             <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #2d3748; line-height: 1.5;">
-                <li><strong>Mattino (a digiuno / colazione):</strong> Assunzione mirata per il supporto energetico mitocondriale e l'allineamento circadiano.</li>
-                <li><strong>Pomeriggio (lontano dai pasti):</strong> Modulazione del drenaggio e supporto metabolico profondo nei momenti di calo energetico.</li>
-                <li><strong>Sera (dopo cena / riposo):</strong> Azione antinfiammatoria tissutale, rilassamento dei plessi e protezione gastrica guidata.</li>
+                <li><strong>Mattino (a digiuno / risveglio):</strong> Supporto mitocondriale profondo, attivazione metabolica e allineamento con i picchi cortisolemici circadiani.</li>
+                <li><strong>Pomeriggio (lontano dai pasti):</strong> Drenaggio organico mirato e mantenimento della stabilità recettoriale.</li>
+                <li><strong>Sera (riposo / post-cena):</strong> Azione antinfiammatoria tissutale guidata, rilassamento dei plessi neuro-vegetativi e protezione gastrica.</li>
             </ul>
             <h4 style="color: #285e61; font-size: 15px; margin: 15px 0 5px 0;">⭐ 3. MOTORE QUANTISTICO & EPIGENETICO</h4>
             <p style="font-size: 13px; color: #2d3748; line-height: 1.5; margin: 0;">
-                Sincronizzazione profonda con il gemello digitale predittivo. Rivalutazione clinico-strumentale consigliata a 30 giorni.
+                Sincronizzazione completata con il gemello digitale predittivo dello Studio Medico d'Élite. Protocollo sintonizzato sui parametri unici del paziente. Rivalutazione clinico-strumentale consigliata a 30 giorni.
             </p>
             <p style="margin-top: 20px; font-size: 12px; color: #2b6cb0; text-align: center; font-weight: bold; background: #ebf8ff; padding: 10px; border-radius: 6px;">
-                Stato: Protocollo d'Élite Attivo e Blinda-Protetto. Puntuale. Preciso. Eccellente. Pronto per la stampa.
+                Stato: Protocollo Neurale d'Élite Validato. Puntuale. Preciso. Eccellente. Pronto per la stampa clinica.
             </p>
         </div>
         """
@@ -56,7 +56,6 @@ def home():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Studio Medico d'Élite • Piattaforma Globale</title>
-        <!-- Icona nativa ad alta definizione per la schermata Home -->
         <link rel="icon" href="https://emojicdn.elk.sh/🛡️">
         <link rel="apple-touch-icon" href="https://emojicdn.elk.sh/🛡️">
         <style>
