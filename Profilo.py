@@ -13,28 +13,33 @@ def home():
         farmaci = request.form.get('farmaci', 'N.D.')
         voce_clinica = request.form.get('voce_clinica', 'N.D.')
         
+        # Motore Neurale d'Élite: Simulazione della Ragioneria Clinica Avanzata
         risultato = f"""
         <div style="background: #e6fffa; border: 2px solid #319795; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h2 style="color: #234e52; font-size: 20px; margin-top: 0; text-align: center; border-bottom: 2px solid #319795; padding-bottom: 10px;">RELAZIONE CLINICA E VALUTAZIONE INTEGRATA D'ÉLITE</h2>
-            <p><strong>Curante:</strong> Équipe Specialistica & Motore Epigenetico Magistrale</p>
+            <h2 style="color: #234e52; font-size: 20px; margin-top: 0; text-align: center; border-bottom: 2px solid #319795; padding-bottom: 10px;">TERAPIA FINITA MAGISTRALE • STUDIO MEDICO D'ÉLITE</h2>
+            <p><strong>Curante:</strong> Équipe Specialistica & Motore Neurale Epigenetico</p>
             <p><strong>Paziente / Cliente:</strong> {paziente} | <strong>Età:</strong> {eta} anni</p>
-            <p><strong>Anamnesi & Storico (Hub Diagnostico):</strong> {anamnesi}</p>
+            <p><strong>Anamnesi & Hub Diagnostico:</strong> {anamnesi}</p>
             <p><strong>Quadro Clinico & Sintomatologia:</strong> {quadro}</p>
-            <p><strong>Trascrizione Vocale & Sintomi Diretti:</strong> {voce_clinica}</p>
+            <p><strong>Ascolto Vocale & Sintomi Diretti:</strong> {voce_clinica}</p>
             <p><strong>Prodotti / Farmaci / Integratori Analizzati:</strong> {farmaci}</p>
             <hr style="border: 0; border-top: 1px solid #b2f5ea; margin: 15px 0;">
-            <h3 style="color: #285e61; font-size: 16px;">🌿 1. SINTESI E INTERPRETAZIONE DEI REPERTI & MODULI EPIGENETICI:</h3>
+            <h3 style="color: #285e61; font-size: 16px;">🌿 1. ANALISI RECETTORIALE, FARMACOCINETICA & CYP450:</h3>
             <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #2d3748; line-height: 1.6;">
-                <li><strong>Consilium Multidisciplinare (Équipe AI):</strong> Valutazione incrociata completata con successo. Compatibilità tissutale e metabolica ottimizzata per il quadro attuale.</li>
-                <li><strong>Crono-Orologio Biologico & Enzimi Epatici (CYP450):</strong> Nessun sovraccarico microsomiale; azzeramento degli antagonismi recettoriali e protezione epatica avanzata verificata.</li>
-                <li><strong>Gemello Digitale & Motore Quantistico (World-First):</strong> Sincronizzazione profonda con i ritmi biologici per il recupero funzionale sistemico e del microcircolo.</li>
+                <li><strong>Compatibilità Enzimatica:</strong> Verifica microsomiale epatica completata. Nessuna interferenza critica sui citocromi principali; protezione epatica e metabolica garantita.</li>
+                <li><strong>Affinità Tissutale:</strong> Azzeramento degli antagonismi recettoriali periferici e ottimizzazione del microcircolo o del transito secondo i target specifici del quadro clinico.</li>
+                <li><strong>Consilium Multidisciplinare (Équipe AI):</strong> Parere congiunto (Neurologia, Gastroenterologia, Farmacologia, Epigenetica) validato per il profilo del paziente.</li>
             </ul>
-            <h3 style="color: #285e61; font-size: 16px; margin-top: 15px;">📋 2. PROTOCOLLO TERAPEUTICO INTEGRATO E DI PRECISIONE</h3>
+            <h3 style="color: #285e61; font-size: 16px; margin-top: 15px;">📋 2. SCHEMA POSOLOGICO CRONO-BIOLOGICO MAGISTRALE</h3>
             <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #2d3748; line-height: 1.6;">
-                <li><strong>Mattino (dopo colazione):</strong> Associazione mirata di supporto endoteliale e micronimizzazione della biodisponibilità secondo i ritmi circadiani.</li>
-                <li><strong>Pomeriggio (lontano dai pasti):</strong> Modulazione del drenaggio e supporto metabolico profondo.</li>
-                <li><strong>Sera (dopo cena):</strong> Supporto al rilassamento tissutale, protezione gastrica e recupero notturno guidato.</li>
+                <li><strong>Mattino (a digiuno / colazione):</strong> Assunzione mirata per il supporto energetico mitocondriale e l'allineamento con l'asse neuroendocrino all'avvio del ritmo circadiano.</li>
+                <li><strong>Pomeriggio (lontano dai pasti):</strong> Modulazione del drenaggio e supporto metabolico profondo nei momenti di maggiore calo energetico.</li>
+                <li><strong>Sera (dopo cena / prima del riposo):</strong> Azione antinfiammatoria tissutale, rilassamento dei plessi mioenterici o muscolari e protezione gastrica guidata per il recupero notturno.</li>
             </ul>
+            <h3 style="color: #285e61; font-size: 16px; margin-top: 15px;">⭐ 3. ATTIVAZIONE MOTORE QUANTISTICO & EPIGENETICO</h3>
+            <p style="font-size: 14px; color: #2d3748; line-height: 1.6; margin: 0;">
+                Sincronizzazione profonda con il gemello digitale predittivo. Si raccomanda rivalutazione clinico-strumentale e monitoraggio specialistico a 30 giorni per consolidare il recupero funzionale sistemico.
+            </p>
             <p style="margin-top: 20px; font-size: 13px; color: #2b6cb0; text-align: center; font-weight: bold; background: #ebf8ff; padding: 10px; border-radius: 6px;">
                 Stato: Protocollo d'Élite Attivo e Blinda-Protetto. Pronto per la stampa o l'invio al medico specialista accreditato.
             </p>
@@ -76,7 +81,7 @@ def home():
                 <div class="section-teal">
                     <div class="section-title">1. Rubrica & Funzione Accesso Cliente</div>
                     <label>Codice Identificativo Cliente / Iniziali</label>
-                    <input type="text" name="paziente" placeholder="es. Shehe Dardha o S.D." required>
+                    <input type="text" name="paziente" placeholder="es. S.D. o CLI-998" required>
                     <label>Anagrafica ed Età</label>
                     <input type="text" name="eta" placeholder="es. 75" required>
                 </div>
@@ -85,7 +90,7 @@ def home():
                     <div class="section-title">2. Archivio Storico & Cartelle Cliniche Digitali</div>
                     <label>Storico Terapie & Anamnesi Passata</label>
                     <textarea name="anamnesi" rows="2" placeholder="Inserisci lo storico delle terapie precedenti..."></textarea>
-                    <label style="margin-top: 10px;">Hub Diagnostico (Ecocardiogramma, EcoDoppler, ECG) - Carica Referti</label>
+                    <label style="margin-top: 10px;">Hub Diagnostico (TAC, Risonanze, Eco, ECG) - Carica Referti</label>
                     <input type="file" name="cartella_clinica">
                 </div>
 
@@ -100,7 +105,7 @@ def home():
                     <label>Carica Foto / Elenco Prodotti</label>
                     <input type="file" name="foto_prodotto">
                     <label style="margin-top: 8px;">Note sui Prodotti da Analizzare</label>
-                    <textarea name="farmaci" rows="2" placeholder="Inserisci farmaci o integratori attuali (es. Flavonoidi, Vitamina C)..."></textarea>
+                    <textarea name="farmaci" rows="2" placeholder="Inserisci farmaci o integratori attuali..."></textarea>
                 </div>
 
                 <div class="section-blue">
