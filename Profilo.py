@@ -1,7 +1,11 @@
 from flask import Flask, request
 import os
+from google import genai
 
 app = Flask(__name__)
+
+# Inizializzazione del client Google GenAI con la chiave sicura di Render
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -12,38 +16,49 @@ def home():
         referti_clinici = request.form.get('referti_clinici', 'Nessun referto inserito')
         farmaci_prodotti = request.form.get('farmaci_prodotti', 'Nessun integratore inserito')
         
+        # Prompt clinico d'Élite per guidare l'intelligenza artificiale
+        prompt_clinico = f"""
+        Agisci come il Dott. Diego Martinez e l'Équipe Specialistica dello Studio Medico d'Élite.
+        Analizza i seguenti dati del paziente (Codice: {paziente}, Età: {eta} anni):
+        - QUADRO DIAGNOSTICO / REFERTI: {referti_clinici}
+        - PRODOTTI / INTEGRATORI / FARMACI: {farmaci_prodotti}
+        
+        Genera una "Terapia Finita Magistrale" rigorosa, scientifica, mirata e formattata con tag HTML puliti (usa titoli h4, paragrafi p e liste ul/li) strutturata esattamente in questo modo:
+        1. Analisi del quadro diagnostico e dei recettori periferici.
+        2. Screening farmacocinetico (interazioni, citocromi CYP450, microcircolo).
+        3. Schema posologico crono-biologico magistrale (Mattino, Pomeriggio, Sera).
+        4. Note di medicina quantistica ed epigeneticamente mirata.
+        """
+        
+        try:
+            # Chiamata al modello reale di intelligenza artificiale
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt_clinico,
+            )
+            testo_ia = response.text
+        except Exception as e:
+            testo_ia = f"<p style='color: red;'>Errore durante la Sincronizzazione Neurale: {str(e)}</p>"
+
+        # Contenitore finale della risposta magistrale
         risultato = f"""
         <div style="background: #e6fffa; border: 2px solid #319795; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 15px;">
                 <div style="font-size: 45px; margin-bottom: 5px;">🛡️ 💎 🧬</div>
-                <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE • TERMINALE ATTIVO</h3>
+                <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE • MOTORE NEURALE ATTIVO</h3>
                 <p style="font-size: 12px; color: #319795; font-weight: bold; margin: 0;">STUDIO MEDICO D'ÉLITE • IL FUTURO DELLA MEDICINA MODERNA</p>
             </div>
-            <p><strong>Curante:</strong> Dott. Diego Martinez, M.D. & Équipe Specialistica</p>
+            <p><strong>Curante:</strong> Dott. Diego Martinez, M.D. & Équipe Specialistica I.A.</p>
             <p><strong>Paziente / Codice:</strong> {paziente} | <strong>Età:</strong> {eta} anni</p>
             
             <hr style="border: 0; border-top: 1px solid #b2f5ea; margin: 15px 0;">
             
-            <h4 style="color: #285e61; font-size: 15px; margin: 10px 0;">📂 1. ANALISI DEL REFERTO & QUADRO CLINICO:</h4>
-            <p style="font-size: 13px; color: #2d3748; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #b2f5ea;">
-                {referti_clinici}
-            </p>
-
-            <h4 style="color: #285e61; font-size: 15px; margin: 15px 0 10px 0;">💊 2. SCREENING PRODOTTI & FARMACOCINETICA:</h4>
-            <p style="font-size: 13px; color: #2d3748; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #b2f5ea;">
-                {farmaci_prodotti}<br>
-                <em>Riscontro Enzimatico:</em> Compatibilità epatica verificata sui citocromi principali e ottimizzazione del microcircolo.
-            </p>
-
-            <h4 style="color: #285e61; font-size: 15px; margin: 15px 0 10px 0;">📋 3. SCHEMA POSOLOGICO CRONO-BIOLOGICO</h4>
-            <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #2d3748; line-height: 1.5;">
-                <li><strong>Mattino:</strong> Sintonizzazione mitocondriale e allineamento con i picchi cortisolemici.</li>
-                <li><strong>Pomeriggio:</strong> Drenaggio organico mirato e protezione tissutale.</li>
-                <li><strong>Sera:</strong> Azione antinfiammatoria profonda e rilassamento dei plessi neuro-vegetativi.</li>
-            </ul>
-
+            <div style="color: #2d3748; font-size: 13px; line-height: 1.6;">
+                {testo_ia}
+            </div>
+            
             <p style="margin-top: 20px; font-size: 12px; color: #2b6cb0; text-align: center; font-weight: bold; background: #ebf8ff; padding: 10px; border-radius: 6px;">
-                Stato: Analisi Completata con Successo. Puntuale. Preciso. Eccellente.
+                Stato: Sincronizzazione Neurale Dinamica Completata. Puntuale. Preciso. Eccellente.
             </p>
         </div>
         """
