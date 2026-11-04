@@ -54,7 +54,7 @@ def home():
             <h1>Studio Medico d'Élite</h1>
             <div class="subtitle">Protocollo Permanente • Piattaforma Specialistica Globale</div>
             
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 <div class="section">
                     <div class="section-title">1. Gestione Paziente / Area Clienti</div>
                     <label>Codice Paziente o Iniziali</label>
@@ -70,13 +70,21 @@ def home():
                 </div>
 
                 <div class="section">
-                    <div class="section-title">3. Postazione Analisi Farmaci, Integratori & Proteine</div>
-                    <label>Inserisci Farmaci o Integratori (es. Normast, L-Tyrosin...)</label>
-                    <textarea name="farmaci" rows="2" placeholder="Inserisci i prodotti da analizzare..."></textarea>
+                    <div class="section-title">3. Hub Diagnostico (TAC, Risonanze, PET, Eco, RX)</div>
+                    <label>Carica Referti o Immagini Diagnostiche</label>
+                    <input type="file" name="cartella_clinica">
+                </div>
+
+                <div class="section">
+                    <div class="section-title">4. Postazione Analisi Farmaci, Integratori & Proteine</div>
+                    <label>Carica Foto / Elenco Prodotti (Farmaci, Integratori)</label>
+                    <input type="file" name="foto_prodotto">
+                    <label style="margin-top: 8px;">Note sui Prodotti da Analizzare</label>
+                    <textarea name="farmaci" rows="2" placeholder="Inserisci i prodotti o note cliniche..."></textarea>
                 </div>
 
                 <div class="section-purple">
-                    <div class="section-title">4. Moduli di Potenza Globale & Epigenetica (World-First)</div>
+                    <div class="section-title">5. Moduli di Potenza Globale & Epigenetica (World-First)</div>
                     <label><input type="checkbox" checked> Attiva Consilium Multidisciplinare (Équipe AI)</label>
                     <label><input type="checkbox" checked> Attiva Crono-Orologio Biologico (Enzimi Epatici)</label>
                     <label><input type="checkbox" checked> Attiva Gemello Digitale Predittivo</label>
@@ -84,7 +92,7 @@ def home():
                 </div>
 
                 <div class="section">
-                    <div class="section-title">5. Obiettivo e Prescrizione Terapeutica</div>
+                    <div class="section-title">6. Obiettivo e Prescrizione Terapeutica</div>
                     <label>Protocollo di Precisione</label>
                     <select>
                         <option>Terapia Finita (Massima Precisione Globale)</option>
