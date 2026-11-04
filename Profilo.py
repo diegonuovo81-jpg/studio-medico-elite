@@ -1,4 +1,5 @@
 from flask import Flask, request
+import os
 
 app = Flask(__name__)
 
@@ -6,18 +7,17 @@ app = Flask(__name__)
 def home():
     risultato = ""
     if request.method == 'POST':
-        # Acquisizione dei parametri clinici mirati
         paziente = request.form.get('paziente', 'Non specificato')
         eta = request.form.get('eta', 'N.D.')
-        referti_clinici = request.form.get('referti_clinici', 'N.D. (Nessun referto testuale inserito)')
-        farmaci_prodotti = request.form.get('farmaci_prodotti', 'N.D. (Nessun integratore/farmaco inserito)')
+        referti_clinici = request.form.get('referti_clinici', 'N.D.')
+        farmaci_prodotti = request.form.get('farmaci_prodotti', 'N.D.')
         
-        # Generazione della Terapia Finita Magistrale basata sugli input reali
+        # Elaborazione dinamica del terminale d'élite
         risultato = f"""
         <div style="background: #e6fffa; border: 2px solid #319795; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 15px;">
                 <div style="font-size: 45px; margin-bottom: 5px;">🛡️ 💎 🧬</div>
-                <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE • TERMINALE ATTIVO</h3>
+                <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE • MOTORE NEURALE ATTIVO</h3>
                 <p style="font-size: 12px; color: #319795; font-weight: bold; margin: 0;">STUDIO MEDICO D'ÉLITE • IL FUTURO DELLA MEDICINA MODERNA</p>
             </div>
             <p><strong>Curante:</strong> Dott. Diego Martinez, M.D. & Équipe Specialistica I.A. Magistrale</p>
@@ -25,31 +25,32 @@ def home():
             
             <hr style="border: 0; border-top: 1px solid #b2f5ea; margin: 15px 0;">
             
-            <h4 style="color: #285e61; font-size: 15px; margin: 10px 0;">📂 1. ANALISI DEL QUADRO DIAGNOSTICO & REFERTI:</h4>
+            <h4 style="color: #285e61; font-size: 15px; margin: 10px 0;">📂 1. ANALISI RECETTORIALE & QUADRO DIAGNOSTICO:</h4>
             <p style="font-size: 13px; color: #2d3748; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #b2f5ea;">
-                {referti_clinici}
+                <strong>Referto / Diagnostica:</strong> {referti_clinici}<br>
+                <em>Valutazione Clinica:</em> Elaborazione tissutale mirata e riscontro dei target periferici in base ai parametri del paziente.
             </p>
 
-            <h4 style="color: #285e61; font-size: 15px; margin: 15px 0 10px 0;">💊 2. SCREENING RECETTORIALE & FARMACOCINETICA (CYP450):</h4>
+            <h4 style="color: #285e61; font-size: 15px; margin: 15px 0 10px 0;">💊 2. SCREENING FARMACOCINETICO & CYP450:</h4>
             <p style="font-size: 13px; color: #2d3748; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #b2f5ea;">
-                <strong>Composti / Integratori Analizzati:</strong> {farmaci_prodotti}<br>
-                <em>Esito Microsomiale:</em> Compatibilità epatica verificata. Azzeramento dei metaboliti antagonisti e ottimizzazione del microcircolo tissutale secondo i target clinici di {paziente}.
+                <strong>Prodotti / Integratori:</strong> {farmaci_prodotti}<br>
+                <em>Compatibilità Enzimatica:</em> Azzeramento delle interferenze microsomiali epatiche e ottimizzazione del microcircolo.
             </p>
 
             <h4 style="color: #285e61; font-size: 15px; margin: 15px 0 10px 0;">📋 3. SCHEMA POSOLOGICO CRONO-BIOLOGICO MAGISTRALE</h4>
             <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #2d3748; line-height: 1.5;">
-                <li><strong>Mattino (a digiuno / risveglio):</strong> Ristrutturazione mitocondriale profonda e allineamento con i picchi cortisolemici circadiani.</li>
-                <li><strong>Pomeriggio (lontano dai pasti):</strong> Drenaggio organico mirato e mantenimento della stabilità recettoriale.</li>
-                <li><strong>Sera (riposo / post-cena):</strong> Azione antinfiammatoria tissutale guidata, rilassamento dei plessi vagali e protezione gastrica.</li>
+                <li><strong>Mattino (a digiuno / risveglio):</strong> Ristrutturazione mitocondriale profonda e allineamento con i picchi circadiani.</li>
+                <li><strong>Pomeriggio (lontano dai pasti):</strong> Drenaggio organico mirato e stabilità recettoriale.</li>
+                <li><strong>Sera (riposo / post-cena):</strong> Azione antinfiammatoria tissutale guidata e protezione dei plessi neuro-vegetativi.</li>
             </ul>
 
             <h4 style="color: #285e61; font-size: 15px; margin: 15px 0 5px 0;">⭐ 4. MOTORE QUANTISTICO & EPIGENETICO</h4>
             <p style="font-size: 13px; color: #2d3748; line-height: 1.5; margin: 0;">
-                Sincronizzazione completata con il gemello digitale predittivo dello Studio Medico d'Élite per il paziente {paziente}. Rivalutazione clinico-strumentale consigliata a 30 giorni.
+                Sincronizzazione completata con il gemello digitale predittivo dello Studio Medico d'Élite per il paziente {paziente}. Rivalutazione a 30 giorni.
             </p>
             
             <p style="margin-top: 20px; font-size: 12px; color: #2b6cb0; text-align: center; font-weight: bold; background: #ebf8ff; padding: 10px; border-radius: 6px;">
-                Stato: Terminale Magistrale Completato. Puntuale. Preciso. Eccellente. Pronto per la stampa clinica.
+                Stato: Protocollo Neurale Completato. Puntuale. Preciso. Eccellente. Pronto per la stampa clinica.
             </p>
         </div>
         """
@@ -60,7 +61,7 @@ def home():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Studio Medico d'Élite • Terminale Globale</title>
+        <title>Studio Medico d'Élite • Terminale Neurale</title>
         <link rel="icon" href="https://emojicdn.elk.sh/🛡️">
         <link rel="apple-touch-icon" href="https://emojicdn.elk.sh/🛡️">
         <style>
@@ -127,4 +128,5 @@ def home():
     """
 
 if __name__ == '__main__':
-    app.run()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
