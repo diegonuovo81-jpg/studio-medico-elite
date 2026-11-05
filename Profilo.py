@@ -4,14 +4,12 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Configurazione di Gemini con la chiave d'ambiente
 api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 
-# Modello Gemini 1.5 Flash ufficiale e stabile
 generation_config = {
-    "temperature": 0.2,
+    "temperature": 0.3,
     "top_p": 0.95,
     "top_k": 40,
     "max_output_tokens": 8192,
@@ -21,10 +19,9 @@ model = genai.GenerativeModel(
     generation_config=generation_config,
     system_instruction=(
         "Sei 'Studio Medico d'Élite', il sistema clinico e terapeutico d'eccellenza "
-        "ideato e sviluppato dal Dr. Diego Martinez. Il tuo compito è fornire analisi cliniche, "
-        "interpretazioni di esami di laboratorio, valutazioni sintomatiche e verifiche di "
-        "interazioni farmacologiche con un rigore scientifico assoluto, un linguaggio chiaro, "
-        "empatico e professionale, degno dei migliori specialisti al mondo."
+        "ideato e sviluppato dal Dr. Diego Martinez. Rispondi in modo conversazionale, "
+        "vivo, fluido, empatico e rigoroso, esattamente come un medico specialista "
+        "e un assistente IA di altissimo livello."
     ),
 )
 
@@ -34,203 +31,60 @@ HTML_PAGE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Medico d'Élite | Dr. Diego Martinez</title>
+    <title>Studio Medico d'Élite | Chat Clinica</title>
     <style>
-        :root {
-            --primary: #0f4c81;
-            --secondary: #1b263b;
-            --accent: #3a86ff;
-            --bg-light: #f4f7fa;
-            --card-bg: #ffffff;
-            --text-main: #2b2d42;
-            --text-muted: #8d99ae;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg-light);
-            color: var(--text-main);
-            margin: 0;
-            padding: 15px;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(15, 76, 129, 0.08);
-        }
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #eef2f6;
-            padding-bottom: 20px;
-        }
-        h1 {
-            color: var(--primary);
-            font-size: 28px;
-            margin: 0 0 5px 0;
-            letter-spacing: -0.5px;
-        }
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 15px;
-            font-weight: 500;
-        }
-        .badge {
-            display: inline-block;
-            background: rgba(58, 134, 255, 0.1);
-            color: var(--accent);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--secondary);
-            font-size: 14px;
-        }
-        select, input, textarea {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #ccd5ae;
-            border-radius: 10px;
-            font-size: 15px;
-            box-sizing: border-box;
-            background: #fafbfc;
-            transition: all 0.3s ease;
-        }
-        select:focus, input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(58, 134, 255, 0.1);
-        }
-        textarea {
-            height: 120px;
-            resize: vertical;
-        }
-        button {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
-            border: none;
-            padding: 16px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 15px rgba(58, 134, 255, 0.3);
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(58, 134, 255, 0.4);
-        }
-        .result-card {
-            margin-top: 35px;
-            background: #f8fafc;
-            border-left: 6px solid var(--accent);
-            padding: 25px;
-            border-radius: 8px;
-            line-height: 1.7;
-        }
-        .result-title {
-            color: var(--primary);
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .result-content {
-            white-space: pre-wrap;
-            font-size: 15px;
-            color: #334155;
-        }
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 13px;
-            color: var(--text-muted);
-            border-top: 1px solid #eef2f6;
-            padding-top: 15px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f4f8; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+        header { background: #0f4c81; color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; max-width: 800px; width: 100%; margin: 0 auto; box-sizing: border-box; }
+        .message { padding: 12px 16px; border-radius: 12px; max-width: 85%; line-height: 1.5; font-size: 15px; word-wrap: break-word; }
+        .user { background: #3a86ff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .bot { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #0f4c81; }
+        .input-container { background: white; padding: 15px; display: flex; gap: 10px; max-width: 800px; width: 100%; margin: 0 auto; box-sizing: border-box; border-top: 1px solid #ddd; }
+        textarea { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; resize: none; height: 45px; box-sizing: border-box; }
+        button { background: #0f4c81; color: white; border: none; padding: 0 20px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        button:hover { background: #0b3c65; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Studio Medico d'Élite</h1>
-            <div class="subtitle">Piattaforma Clinica Avanzata</div>
-            <div class="badge">Direzione Scientifica: Dr. Diego Martinez</div>
-        </header>
-
-        <form method="POST">
-            <div class="form-group">
-                <label for="patient_info">1. Anagrafica Paziente / Codice:</label>
-                <input type="text" name="patient_info" id="patient_info" placeholder="Es. Iniziali o Codice (es. C.D., 65 anni)">
-            </div>
-
-            <div class="form-group">
-                <label for="referti">2. Casella Dedicata: Referti, TAC, Analisi & Diagnostica:</label>
-                <textarea name="referti" id="referti" placeholder="Incolla o scrivi i dati dei referti, esami del sangue, TAC o ecografie..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="farmaci">3. Casella Dedicata: Farmaci, Integratori & Proteine:</label>
-                <textarea name="farmaci" id="farmaci" placeholder="Inserisci l'elenco dei prodotti o integratori attuali..."></textarea>
-            </div>
-
-            <button type="submit">⚡ Genera la Terapia Finita Magistrale</button>
-        </form>
-
-        {% if result %}
-            <div class="result-card">
-                <div class="result-title">
-                    <span>🌟</span> Terapia Finita Magistrale • Parere Clinico Ufficiale
-                </div>
-                <div class="result-content">{{ result }}</div>
-            </div>
+    <header>Studio Medico d'Élite — Dr. Diego Martinez</header>
+    
+    <div class="chat-container" id="chatContainer">
+        <div class="message bot">Benvenuto nel terminale neurale di <b>Studio Medico d'Élite</b>. Sono pronto ad analizzare referti, sintomi e terapie in tempo reale. Come posso aiutarti oggi?</div>
+        {% if user_query %}
+            <div class="message user">{{ user_query }}</div>
+            <div class="message bot">{{ bot_response }}</div>
         {% endif %}
-
-        <footer>
-            Studio Medico d'Élite &copy; 2026 — Sviluppato dal Dr. Diego Martinez
-        </footer>
     </div>
+
+    <div class="input-container">
+        <form method="POST" style="display: flex; width: 100%; gap: 10px;">
+            <textarea name="query" placeholder="Scrivi qui il tuo quesito clinico o incolla i referti..." required autofocus></textarea>
+            <button type="submit">Invia</button>
+        </form>
+    </div>
+
+    <script>
+        const container = document.getElementById('chatContainer');
+        container.scrollTop = container.scrollHeight;
+    </script>
 </body>
 </html>
 """
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    result = None
+    user_query = None
+    bot_response = None
     if request.method == "POST":
-        patient_info = request.form.get("patient_info", "Non specificato")
-        referti = request.form.get("referti", "Nessun referto inserito")
-        farmaci = request.form.get("farmaci", "Nessun farmaco inserito")
-        
-        prompt_completo = (
-            f"Paziente / Dati anagrafici: {patient_info}\n\n"
-            f"Referti ed Esami Diagnostici:\n{referti}\n\n"
-            f"Farmaci e Integratori attuali:\n{farmaci}\n\n"
-            "Fornisci un'analisi clinica e una Terapia Finita Magistrale dettagliata, rigorosa e professionale."
-        )
-        try:
-            chat = model.start_chat(history=[])
-            response = chat.send_message(prompt_completo)
-            result = response.text
-        except Exception as e:
-            result = f"Errore durante la Sincronizzazione Neurale: {str(e)}"
-    return render_template_string(HTML_PAGE, result=result)
+        user_query = request.form.get("query")
+        if user_query:
+            try:
+                chat = model.start_chat(history=[])
+                response = chat.send_message(user_query)
+                bot_response = response.text
+            except Exception as e:
+                bot_response = f"Errore di sincronizzazione neurale: {str(e)}"
+    return render_template_string(HTML_PAGE, user_query=user_query, bot_response=bot_response)
 
 port = int(os.environ.get("PORT", 10000))
 
