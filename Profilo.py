@@ -4,8 +4,8 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# CHIAVE API INTEGRATA DIRETTAMENTE NEL CODICE PER MASSIMA STABILITÀ
-GEMINI_API_KEY = "AIzaSyD-Tu_chiave_gia_inserita_e_protetta"
+# CHIAVE API UFFICIALE DEL DR. DIEGO MARTINEZ INTEGRATA NEL CODICE
+GEMINI_API_KEY = "AQ.Ab8RN6K0UI1Xd-NVIE9C2MD8gmvxQ"
 
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
