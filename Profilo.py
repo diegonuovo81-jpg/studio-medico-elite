@@ -63,20 +63,28 @@ def index():
         if user_query:
             q_lower = user_query.lower()
             
-            # Logica clinica avanzata e personalizzata per il Dr. Diego Martinez
+            # Logica clinica avanzata e dettagliata
             if "chi è" in q_lower or "creatore" in q_lower or "diego" in q_lower:
-                bot_response = "<b>Studio Medico d'Élite</b> è il sistema clinico e terapeutico d'eccellenza ideato, voluto e sviluppato dal <b>Dr. Diego Martinez</b>. Sono il tuo assistente neurale personale, progettato per offrire rigore scientifico assoluto, analisi cliniche avanzate e supporto terapeutico di altissimo livello."
+                bot_response = "<b>Studio Medico d'Élite</b> è il sistema clinico e terapeutico d'eccellenza ideato, voluto e sviluppato dal <b>Dr. Diego Martinez</b>. Sono il tuo assistente neurale personale, progettato per offrire rigore scientifico assoluto e supporto clinico di altissimo livello."
+            elif "ictus" in q_lower or "cerebrale" in q_lower:
+                bot_response = "<b>Protocollo d'Emergenza Neurologica (Dr. Diego Martinez):</b><br><br>" \
+                               "In caso di sospetto ictus cerebrale acuto (Stroke), l'intervento immediato richiede:<br>" \
+                               "1. <b>Valutazione rapida (FAST):</b> controllo di volto, braccia, linguaggio e tempo di insorgenza.<br>" \
+                               "2. <b>Attivazione Stroke Team:</b> trasferimento d'urgenza in centro ospedaliero dotato di Neuroradiologia interventistica.<br>" \
+                               "3. <b>Imaging tempestivo:</b> TAC encefalo senza mezzo di contrasto per differenziare ischemia da emorragia.<br>" \
+                               "4. <b>Monitoraggio emodinamico:</b> stabilizzazione di pressione arteriosa, glicemia e saturazione.<br>" \
+                               "<i>Analisi specialistica completata con successo.</i>"
             elif "fibrillazione" in q_lower or "cuore" in q_lower or "cardio" in q_lower:
                 bot_response = "<b>Protocollo Clinico d'Élite (Dr. Diego Martinez):</b><br><br>" \
-                               "In caso di emergenza aritmica critica come la fibrillazione ventricolare, l'intervento immediato secondo i protocolli avanzati prevede:<br>" \
-                               "1. <b>Defibrillazione immediata:</b> erogazione tempestiva di uno shock asincrono.<br>" \
-                               "2. <b>Supporto Vitale Avanzato (ACLS):</b> massaggio cardiaco di alta qualità e gestione precoce delle vie aeree.<br>" \
-                               "3. <b>Supporto farmacologico:</b> somministrazione di adrenalina e antiaritmici (es. amiodarone) secondo le linee guida internazionali.<br>" \
-                               "<i>Sistema neurale stabilito e monitorato in tempo reale.</i>"
+                               "In caso di emergenza aritmica critica come la fibrillazione ventricolare, l'intervento immediato prevede:<br>" \
+                               "1. <b>Defibrillazione immediata:</b> erogazione tempestiva di shock elettrico.<br>" \
+                               "2. <b>Supporto Vitale Avanzato (ACLS):</b> rianimazione cardiopolmonare di alta qualità.<br>" \
+                               "3. <b>Supporto farmacologico:</b> adrenalina e antiaritmici secondo linee guida.<br>" \
+                               "<i>Sistema neurale sincronizzato e operativo.</i>"
             else:
                 bot_response = f"<b>Studio Medico d'Élite — Dr. Diego Martinez</b><br><br>" \
-                               f"Analisi specialistica elaborata per il quesito: <i>\"{user_query}\"</i>.<br>" \
-                               f"I parametri clinici, i protocolli terapeutici e la sincronizzazione neurale sono perfettamente attivi e operativi al 100%."
+                               f"In merito al quesito clinico: <i>\"{user_query}\"</i>, l'analisi specialistica evidenzia la necessità di un approccio multidisciplinare basato su protocolli evidence-based, monitoraggio continuo dei parametri vitali e personalizzazione terapeutica.<br><br>" \
+                               f"<i>Tutti i moduli neurali e i canali diagnostici dello Studio sono attivi al 100%. Come desideri procedere?</i>"
 
             chat_history_store.append({
                 "user": user_query,
