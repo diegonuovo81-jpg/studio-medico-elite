@@ -9,7 +9,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 
-# Modello Gemini 1.5 Flash ottimizzato per la massima precisione clinica
+# Modello Gemini 1.5 Flash ufficiale e stabile
 generation_config = {
     "temperature": 0.2,
     "top_p": 0.95,
@@ -97,7 +97,7 @@ HTML_PAGE = """
             color: var(--secondary);
             font-size: 14px;
         }
-        select, textarea {
+        select, input, textarea {
             width: 100%;
             padding: 14px;
             border: 1px solid #ccd5ae;
@@ -107,14 +107,14 @@ HTML_PAGE = """
             background: #fafbfc;
             transition: all 0.3s ease;
         }
-        select:focus, textarea:focus {
+        select:focus, input:focus, textarea:focus {
             outline: none;
             border-color: var(--accent);
             background: #fff;
             box-shadow: 0 0 0 4px rgba(58, 134, 255, 0.1);
         }
         textarea {
-            height: 140px;
+            height: 120px;
             resize: vertical;
         }
         button {
@@ -176,34 +176,34 @@ HTML_PAGE = """
 
         <form method="POST">
             <div class="form-group">
-                <label for="analysis_type">Seleziona Tipologia Analisi:</label>
-                <select name="analysis_type" id="analysis_type">
-                    <option value="Referti ed Esami di Laboratorio">🧬 Interpretazione Referti & Esami di Laboratorio</option>
-                    <option value="Valutazione Sintomi Clinici">🩺 Valutazione Clinica dei Sintomi</option>
-                    <option value="Interazioni Farmacologiche">💊 Analisi Interazioni Farmacologiche e Terapie</option>
-                    <option value="Parere Medico Specialistico Globale">🌟 Parere Medico Specialistico Globale</option>
-                </select>
+                <label for="patient_info">1. Anagrafica Paziente / Codice:</label>
+                <input type="text" name="patient_info" id="patient_info" placeholder="Es. Iniziali o Codice (es. C.D., 65 anni)">
             </div>
 
             <div class="form-group">
-                <label for="query">Dati Clinici, Quesito o Farmaci del Paziente:</label>
-                <textarea name="query" id="query" placeholder="Inserisci qui i valori degli esami, i sintomi riscontrati o l'elenco dei farmaci da esaminare con cura..."></textarea>
+                <label for="referti">2. Casella Dedicata: Referti, TAC, Analisi & Diagnostica:</label>
+                <textarea name="referti" id="referti" placeholder="Incolla o scrivi i dati dei referti, esami del sangue, TAC o ecografie..."></textarea>
             </div>
 
-            <button type="submit">Esegui Analisi Clinica d'Élite</button>
+            <div class="form-group">
+                <label for="farmaci">3. Casella Dedicata: Farmaci, Integratori & Proteine:</label>
+                <textarea name="farmaci" id="farmaci" placeholder="Inserisci l'elenco dei prodotti o integratori attuali..."></textarea>
+            </div>
+
+            <button type="submit">⚡ Genera la Terapia Finita Magistrale</button>
         </form>
 
         {% if result %}
             <div class="result-card">
                 <div class="result-title">
-                    <span>📋</span> Referto e Parere Clinico Ufficiale
+                    <span>🌟</span> Terapia Finita Magistrale • Parere Clinico Ufficiale
                 </div>
                 <div class="result-content">{{ result }}</div>
             </div>
         {% endif %}
 
         <footer>
-            Studio Medico d'Élite &copy; 2026 — Sviluppato con Amore e Visione dal Dr. Diego Martinez
+            Studio Medico d'Élite &copy; 2026 — Sviluppato dal Dr. Diego Martinez
         </footer>
     </div>
 </body>
@@ -214,16 +214,22 @@ HTML_PAGE = """
 def index():
     result = None
     if request.method == "POST":
-        analysis_type = request.form.get("analysis_type", "Parere Globale")
-        user_query = request.form.get("query")
-        if user_query:
-            prompt_completo = f"Tipologia di richiesta: {analysis_type}\n\nDati clinici forniti dal medico:\n{user_query}"
-            try:
-                chat = model.start_chat(history=[])
-                response = chat.send_message(prompt_completo)
-                result = response.text
-            except Exception as e:
-                result = f"Errore durante l'elaborazione clinica: {str(e)}"
+        patient_info = request.form.get("patient_info", "Non specificato")
+        referti = request.form.get("referti", "Nessun referto inserito")
+        farmaci = request.form.get("farmaci", "Nessun farmaco inserito")
+        
+        prompt_completo = (
+            f"Paziente / Dati anagrafici: {patient_info}\n\n"
+            f"Referti ed Esami Diagnostici:\n{referti}\n\n"
+            f"Farmaci e Integratori attuali:\n{farmaci}\n\n"
+            "Fornisci un'analisi clinica e una Terapia Finita Magistrale dettagliata, rigorosa e professionale."
+        )
+        try:
+            chat = model.start_chat(history=[])
+            response = chat.send_message(prompt_completo)
+            result = response.text
+        except Exception as e:
+            result = f"Errore durante la Sincronizzazione Neurale: {str(e)}"
     return render_template_string(HTML_PAGE, result=result)
 
 port = int(os.environ.get("PORT", 10000))
