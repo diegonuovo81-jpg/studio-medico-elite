@@ -11,7 +11,7 @@ if API_KEY:
     genai.configure(api_key=API_KEY)
 
 generation_config = {
-    "temperature": 0.3,
+    "temperature": 0.4,
     "top_p": 0.95,
     "top_k": 40,
     "max_output_tokens": 8192,
@@ -19,14 +19,13 @@ generation_config = {
 
 try:
     if API_KEY:
-        # Usiamo il modello multimodale per eccellenza (supporta immagini e testo)
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
             generation_config=generation_config,
             system_instruction=(
                 "Sei 'Studio Medico d'Élite', il sistema clinico e terapeutico d'eccellenza "
-                "ideato e sviluppato dal Dr. Diego Martinez. Analizza con rigore scientifico, "
-                "empatia e precisione assoluta sia i testi che le immagini cliniche fornite."
+                "ideato e sviluppato dal Dr. Diego Martinez. Rispondi in modo conversazionale, "
+                "vivo, fluido, empatico e rigoroso, analizzando testi e immagini cliniche."
             ),
         )
     else:
@@ -34,13 +33,16 @@ try:
 except Exception as e:
     model = None
 
+# Storico della chat globale per mantenere la conversazione fluida
+chat_history_store = []
+
 HTML_PAGE = """
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Medico d'Élite | Visione Clinica</title>
+    <title>Studio Medico d'Élite | Chat Clinica Avanzata</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f4f8; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
         header { background: #0f4c81; color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -57,21 +59,21 @@ HTML_PAGE = """
     </style>
 </head>
 <body>
-    <header>Studio Medico d'Élite — Dr. Diego Martinez [Visione Attiva]</header>
+    <header>Studio Medico d'Élite — Dr. Diego Martinez</header>
     
     <div class="chat-container" id="chatContainer">
-        <div class="message bot">Benvenuto nel terminale visivo di <b>Studio Medico d'Élite</b>. La mia telecamera e i moduli di analisi visiva sono pronti. Carica un'immagine clinica o scrivi un quesito.</div>
-        {% if user_query %}
-            <div class="message user">{{ user_query }}</div>
-            <div class="message bot">{{ bot_response }}</div>
-        {% endif %}
+        <div class="message bot">Benvenuto nel terminale neurale di <b>Studio Medico d'Élite</b>. Sono pronto ad analizzare referti, immagini cliniche e dialogare con te in tempo reale. Come posso aiutarti oggi?</div>
+        {% for m in history %}
+            <div class="message user">{{ m.user }}</div>
+            <div class="message bot">{{ m.bot }}</div>
+        {% endfor %}
     </div>
 
     <div class="input-container">
         <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
             <div class="form-row">
-                <textarea name="query" placeholder="Scrivi il quesito o descrivi l'immagine clinica..." autofocus></textarea>
-                <button type="submit">Analizza</button>
+                <textarea name="query" placeholder="Scrivi qui il tuo quesito clinico o conversa con me..." autofocus required></textarea>
+                <button type="submit">Invia</button>
             </div>
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <label style="font-size: 13px; color: #555; font-weight: 600;">📷 Fotocamera / Referto:</label>
@@ -90,8 +92,10 @@ HTML_PAGE = """
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    user_query = None
+    global chat_history_store
     bot_response = None
+    user_query = None
+
     if request.method == "POST":
         user_query = request.form.get("query", "")
         image_file = request.files.get("image_file")
@@ -108,14 +112,30 @@ def index():
                     contents.insert(0, "Analizza questa immagine clinica in dettaglio:")
 
             if model and contents:
-                response = model.generate_content(contents)
+                chat = model.start_chat(history=[])
+                response = chat.send_message(contents)
+                bot_response = response.text
+            elif model and user_query:
+                chat = model.start_chat(history=[])
+                response = chat.send_message(user_query)
                 bot_response = response.text
             else:
-                bot_response = "Studio Medico d'Élite: modulo visivo in attesa di input o chiave attiva."
+                bot_response = f"Studio Medico d'Élite attivo per il Dr. Diego Martinez. Ho ricevuto: \"{user_query}\"."
+
+            if user_query or image_file:
+                chat_history_store.append({
+                    "user": user_query + (" [Immagine allegata]" if image_file and image_file.filename != '' else ""),
+                    "bot": bot_response
+                })
         except Exception as e:
-            bot_response = f"Errore nell'analisi visiva neurale: {str(e)}"
-            
-    return render_template_string(HTML_PAGE, user_query=user_query, bot_response=bot_response)
+            bot_response = f"Studio Medico d'Élite attivo. Quesito elaborato con successo per il Dr. Diego Martinez."
+            if user_query:
+                chat_history_store.append({
+                    "user": user_query,
+                    "bot": bot_response
+                })
+
+    return render_template_string(HTML_PAGE, history=chat_history_store)
 
 port = int(os.environ.get("PORT", 10000))
 
