@@ -1,137 +1,102 @@
-from flask import Flask, request
 import os
-from google import genai
+from flask import Flask, request, render_template_string
+import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Inizializzazione del client Google GenAI con la chiave sicura di Render
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+api_key = os.environ.get("GEMINI_API_KEY")
+if api_key:
+    genai.configure(api_key=api_key)
+
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+HTML_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Medico d'Élite</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #004d40; text-align: center; font-size: 24px; }
+        .form-group { margin-bottom: 15px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; color: #00796b; }
+        input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button { background-color: #00796b; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #004d40; }
+        .result { margin-top: 20px; padding: 15px; background: #e0f2f1; border-left: 5px solid #00796b; border-radius: 4px; white-space: pre-wrap; }
+        .error { margin-top: 20px; padding: 15px; background: #ffebee; border-left: 5px solid #c62828; border-radius: 4px; color: #c62828; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Studio Medico d'Élite</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label>Iniziali o Codice Paziente</label>
+                <input type="text" name="paziente" value="{{ paziente }}" placeholder="Es. C.D.">
+            </div>
+            <div class="form-group">
+                <label>Referti, Analisi & Diagnostica</label>
+                <textarea name="referti" rows="4" placeholder="Incolla qui i referti o i dati clinici...">{{ referti }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Farmaci, Integratori o Terapia Finita</label>
+                <textarea name="farmaci" rows="3" placeholder="Inserisci farmaci o scrivi 'terapia finita'...">{{ farmaci }}</textarea>
+            </div>
+            <button type="submit">⚡ Genera Analisi Clinica Magistrale</button>
+        </form>
+
+        {% if risposta %}
+        <div class="result">
+            <strong>Risposta Clinica d'Élite:</strong><br>{{ risposta }}
+        </div>
+        {% endif %}
+
+        {% if errore %}
+        <div class="error">
+            <strong>Errore di Sincronizzazione:</strong><br>{{ errore }}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
+"""
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    risultato = ""
+    risposta = None
+    errore = None
+    paziente = ""
+    referti = ""
+    farmaci = ""
+
     if request.method == 'POST':
-        paziente = request.form.get('paziente', 'Non specificato')
-        eta = request.form.get('eta', 'N.D.')
-        referti_clinici = request.form.get('referti_clinici', 'Nessun referto inserito')
-        farmaci_prodotti = request.form.get('farmaci_prodotti', 'Nessun integratore inserito')
-        
-        # Prompt clinico d'Élite per guidare l'intelligenza artificiale
+        paziente = request.form.get('paziente', '')
+        referti = request.form.get('referti', '')
+        farmaci = request.form.get('farmaci', '')
+
         prompt_clinico = f"""
-        Agisci come il Dott. Diego Martinez e l'Équipe Specialistica dello Studio Medico d'Élite.
-        Analizza i seguenti dati del paziente (Codice: {paziente}, Età: {eta} anni):
-        - QUADRO DIAGNOSTICO / REFERTI: {referti_clinici}
-        - PRODOTTI / INTEGRATORI / FARMACI: {farmaci_prodotti}
-        
-        Genera una "Terapia Finita Magistrale" rigorosa, scientifica, mirata e formattata con tag HTML puliti (usa titoli h4, paragrafi p e liste ul/li) strutturata esattamente in questo modo:
-        1. Analisi del quadro diagnostico e dei recettori periferici.
-        2. Screening farmacocinetico (interazioni, citocromi CYP450, microcircolo).
-        3. Schema posologico crono-biologico magistrale (Mattino, Pomeriggio, Sera).
-        4. Note di medicina quantistica ed epigeneticamente mirata.
+        Agisci come il Dott. Diego Martinez, M.D. & Équipe Specialistica I.A. dello Studio Medico d'Élite.
+        Analizza con estremo rigore scientifico e clinico i dati del paziente:
+        - Paziente / Codice: {paziente}
+        - Referti / Diagnostica: {referti}
+        - Farmaci / Integratori / Richiesta: {farmaci}
+
+        Fornisci un referto clinico d'élite strutturato, professionale e completo, gestendo con precisione sia l'analisi clinica che eventuali richieste di fine terapia.
         """
-        
+
         try:
-            # Chiamata al modello reale di intelligenza artificiale
-            response = client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=prompt_clinico,
-            )
-            testo_ia = response.text
+            if not api_key:
+                raise ValueError("Nessuna chiave API trovata nelle variabili d'ambiente.")
+            response = model.generate_content(prompt_clinico)
+            risposta = response.text
         except Exception as e:
-            testo_ia = f"<p style='color: red;'>Errore durante la Sincronizzazione Neurale: {str(e)}</p>"
+            errore = str(e)
 
-        # Contenitore finale della risposta magistrale
-        risultato = f"""
-        <div style="background: #e6fffa; border: 2px solid #319795; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <div style="text-align: center; margin-bottom: 15px;">
-                <div style="font-size: 45px; margin-bottom: 5px;">🛡️ 💎 🧬</div>
-                <h3 style="color: #234e52; font-size: 18px; margin: 10px 0 5px 0;">TERAPIA FINITA MAGISTRALE • MOTORE NEURALE ATTIVO</h3>
-                <p style="font-size: 12px; color: #319795; font-weight: bold; margin: 0;">STUDIO MEDICO D'ÉLITE • IL FUTURO DELLA MEDICINA MODERNA</p>
-            </div>
-            <p><strong>Curante:</strong> Dott. Diego Martinez, M.D. & Équipe Specialistica I.A.</p>
-            <p><strong>Paziente / Codice:</strong> {paziente} | <strong>Età:</strong> {eta} anni</p>
-            
-            <hr style="border: 0; border-top: 1px solid #b2f5ea; margin: 15px 0;">
-            
-            <div style="color: #2d3748; font-size: 13px; line-height: 1.6;">
-                {testo_ia}
-            </div>
-            
-            <p style="margin-top: 20px; font-size: 12px; color: #2b6cb0; text-align: center; font-weight: bold; background: #ebf8ff; padding: 10px; border-radius: 6px;">
-                Stato: Sincronizzazione Neurale Dinamica Completata. Puntuale. Preciso. Eccellente.
-            </p>
-        </div>
-        """
-
-    return f"""
-    <!DOCTYPE html>
-    <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Studio Medico d'Élite • Terminale Neurale</title>
-        <style>
-            body {{ font-family: Arial, sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 15px; }}
-            .container {{ max-width: 650px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
-            .brand-header {{ text-align: center; margin-bottom: 20px; }}
-            h1 {{ color: #1a365d; text-align: center; font-size: 22px; margin: 0; }}
-            .subtitle {{ text-align: center; color: #666; font-size: 11px; margin-top: 5px; margin-bottom: 20px; text-transform: uppercase; font-weight: bold; }}
-            .section-teal {{ border: 2px solid #319795; border-radius: 8px; padding: 12px; margin-bottom: 15px; background: #e6fffa; }}
-            .section-orange {{ border: 2px solid #dd6b20; border-radius: 8px; padding: 12px; margin-bottom: 15px; background: #fffaf0; }}
-            .section-blue {{ border: 2px solid #3182ce; border-radius: 8px; padding: 12px; margin-bottom: 15px; background: #ebf8ff; }}
-            .section-title {{ font-weight: bold; margin-bottom: 8px; font-size: 15px; }}
-            .section-teal .section-title {{ color: #234e52; }}
-            .section-orange .section-title {{ color: #c05621; }}
-            .section-blue .section-title {{ color: #2b6cb0; }}
-            label {{ display: block; margin-top: 8px; font-size: 13px; color: #2d3748; font-weight: bold; }}
-            input, textarea {{ width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box; font-size: 14px; }}
-            .btn {{ background-color: #319795; color: white; padding: 14px; border: none; border-radius: 6px; width: 100%; font-weight: bold; font-size: 16px; margin-top: 15px; cursor: pointer; text-align: center; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="brand-header">
-                <div style="font-size: 45px; margin-bottom: 5px;">🛡️💎🧬</div>
-                <h1>Studio Medico d'Élite</h1>
-                <div class="subtitle">Il Futuro della Medicina Moderna • Puntuale, Preciso, Eccellente</div>
-            </div>
-            
-            <form method="POST">
-                <div class="section-teal">
-                    <div class="section-title">1. Anagrafica Paziente / Codice</div>
-                    <label>Iniziali o Codice Cliente</label>
-                    <input type="text" name="paziente" placeholder="es. CLI-999" required>
-                    <label>Età</label>
-                    <input type="text" name="eta" placeholder="es. 60" required>
-                </div>
-
-                <div class="section-orange">
-                    <div class="section-title">2. Casella Dedicata: Referti, TAC, Analisi & Diagnostica</div>
-                    <label>Incolla o scrivi i dati dei referti, esami del sangue, TAC o ecografie</label>
-                    <textarea name="referti_clinici" rows="4" placeholder="Inserisci qui il referto medico o la diagnostica..."></textarea>
-                </div>
-
-                <div class="section-blue">
-                    <div class="section-title">3. Casella Dedicata: Farmaci, Integratori & Proteine</div>
-                    <label>Inserisci l'elenco dei prodotti o integratori attuali</label>
-                    <textarea name="farmaci_prodotti" rows="4" placeholder="Inserisci qui gli integratori o farmaci..."></textarea>
-                </div>
-
-                <div class="section-teal">
-                    <button type="submit" class="btn">⚡ Genera la Terapia Finita Magistrale</button>
-                </div>
-            </form>
-
-            {risultato}
-            
-            <div style="text-align: center; margin-top: 25px; font-size: 11px; color: #a0aec0;">
-                Studio Medico d'Élite • Terminale Neurale Globale
-            </div>
-        </div>
-    </body>
-    </html>
-    """
+    return render_template_string(HTML_TEMPLATE, risposta=risposta, errore=errore, paziente=paziente, referti=referti, farmaci=farmaci)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
