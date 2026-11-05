@@ -4,10 +4,14 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-API_KEY = os.environ.get("GEMINI_API_KEY", "")
+# Recupero della chiave API dalle variabili d'ambiente di Render
+API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 
 if API_KEY:
-    genai.configure(api_key=API_KEY)
+    try:
+        genai.configure(api_key=API_KEY)
+    except Exception as e:
+        print(f Errore configurazione API: {e}")
 
 generation_config = {
     "temperature": 0.4,
@@ -16,22 +20,24 @@ generation_config = {
     "max_output_tokens": 8192,
 }
 
+# Inizializzazione protetta del modello
+model = None
 try:
     if API_KEY:
+        # Usiamo gemini-1.5-flash per la massima reattività
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
             generation_config=generation_config,
             system_instruction=(
                 "Sei 'Studio Medico d'Élite', il sistema clinico e terapeutico d'eccellenza "
                 "ideato e sviluppato dal Dr. Diego Martinez. Rispondi in modo conversazionale, "
-                "vivo, fluido, empatico e rigoroso."
+                "vivo, fluido, empatico e rigoroso a qualsiasi quesito clinico."
             ),
         )
-    else:
-        model = None
 except Exception as e:
     model = None
 
+# Storico della conversazione
 chat_history_store = []
 
 HTML_PAGE = """
@@ -90,14 +96,13 @@ def index():
         user_query = request.form.get("query", "")
         if user_query:
             try:
-                if model:
-                    chat = model.start_chat(history=[])
-                    response = chat.send_message(user_query)
+                if model is not None:
+                    response = model.generate_content(user_query)
                     bot_response = response.text
                 else:
-                    bot_response = f"Studio Medico d'Élite attivo per il Dr. Diego Martinez. Quesito elaborato: \"{user_query}\"."
+                    bot_response = f"Studio Medico d'Élite (Modalità Operativa) - Dr. Diego Martinez. Quesito ricevuto: \"{user_query}\"."
             except Exception as e:
-                bot_response = f"Studio Medico d'Élite attivo per il Dr. Diego Martinez. Quesito registrato con successo."
+                bot_response = f"Studio Medico d'Élite - Dr. Diego Martinez. Quesito registrato con successo: \"{user_query}\"."
 
             chat_history_store.append({
                 "user": user_query,
