@@ -4,9 +4,11 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-api_key = os.environ.get("GEMINI_API_KEY")
-if api_key:
-    genai.configure(api_key=api_key)
+# INSERIAMO LA CHIAVE DIRETTAMENTE QUI PER EVITARE QUALSIASI ERRORE DI SERVER
+GEMINI_API_KEY = "INCOLLA_QUI_LA_TUA_CHIAVE_DI_GEMINI"
+
+if GEMINI_API_KEY and GEMINI_API_KEY != "INCOLLA_QUI_LA_TUA_CHIAVE_DI_GEMINI":
+    genai.configure(api_key=GEMINI_API_KEY)
 
 generation_config = {
     "temperature": 0.3,
