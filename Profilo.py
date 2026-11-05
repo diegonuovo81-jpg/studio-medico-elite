@@ -4,11 +4,9 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# CHIAVE API UFFICIALE DEL DR. DIEGO MARTINEZ INTEGRATA NEL CODICE
-GEMINI_API_KEY = "AQ.Ab8RN6K0UI1Xd-NVIE9C2MD8gmvxQ"
-
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+# CONFIGURAZIONE DIRETTA DELLA CHIAVE API UFFICIALE
+API_KEY = "AQ.Ab8RN6K0UI1Xd-NVIE9C2MD8gmvxQ"
+genai.configure(api_key=API_KEY)
 
 generation_config = {
     "temperature": 0.3,
@@ -16,6 +14,7 @@ generation_config = {
     "top_k": 40,
     "max_output_tokens": 8192,
 }
+
 model = genai.GenerativeModel(
     model_name="gemini-1.5-flash",
     generation_config=generation_config,
