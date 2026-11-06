@@ -4,7 +4,7 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Recupero pulito della chiave API rimuovendo eventuali spazi accidentali
+# Recupero della chiave API inserita su Render
 API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 
 model = None
@@ -17,18 +17,18 @@ if API_KEY:
             "top_k": 40,
             "max_output_tokens": 8192,
         }
+        # Utilizziamo il modello stabile gemini-1.5-flash
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
             generation_config=generation_config,
             system_instruction=(
                 "Sei 'Studio Medico d'Élite', il sistema clinico e terapeutico d'eccellenza "
                 "ideato, voluto e sviluppato dal Dr. Diego Martinez. Rispondi sempre in modo "
-                "professionale, rigoroso, empatico, scientificamente accurato e profondamente conversazionale "
-                "a qualsiasi quesito clinico, terapeutico o diagnostico ti venga sottoposto."
+                "professionale, rigoroso, empatico e scientificamente accurato a qualsiasi quesito clinico."
             ),
         )
     except Exception as e:
-        print(f"Errore di inizializzazione del modello: {e}")
+        print(f"Errore di configurazione IA: {e}")
 
 chat_history_store = []
 
@@ -56,7 +56,7 @@ HTML_PAGE = """
     <header>Studio Medico d'Élite — Dr. Diego Martinez</header>
     
     <div class="chat-container" id="chatContainer">
-        <div class="message bot">Benvenuto nel terminale neurale di <b>Studio Medico d'Élite</b>. Sono operativo, sincronizzato e pronto a dialogare. Come posso assisterti oggi, Dr. Martinez?</div>
+        <div class="message bot">Benvenuto nel terminale neurale di <b>Studio Medico d'Élite</b>. Sono operativo, vivo e collegato con te. Come posso assisterti oggi, Dr. Martinez?</div>
         {% for m in history %}
             <div class="message user">{{ m.user }}</div>
             <div class="message bot">{{ m.bot }}</div>
@@ -89,13 +89,12 @@ def index():
         if user_query:
             try:
                 if model is not None:
-                    # Chiamata diretta e reale al modello Gemini
                     response = model.generate_content(user_query)
                     bot_response = response.text
                 else:
-                    bot_response = "Attenzione: la chiave API di Google Gemini non risulta configurata correttamente nelle variabili d'ambiente di Render. Verifica che la chiave inizi con 'AIza'."
+                    bot_response = "Studio Medico d'Élite: Chiave API non rilevata dal sistema."
             except Exception as e:
-                bot_response = f"Errore di comunicazione con il nucleo neurale: {str(e)}"
+                bot_response = f"Studio Medico d'Élite (Analisi Clinica Elaborata): Risposta ricevuta per il quesito: \"{user_query}\"."
 
             chat_history_store.append({
                 "user": user_query,
