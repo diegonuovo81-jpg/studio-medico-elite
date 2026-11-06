@@ -1,12 +1,15 @@
 import os
-import requests
-import json
 from flask import Flask, render_template_string, request as flask_request
+import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Recupero della chiave API e pulizia
+# Recupero pulito della chiave API
 API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
+
+# Configurazione del client Gemini ufficiale
+if API_KEY:
+    genai.configure(api_key=API_KEY)
 
 chat_history_store = []
 
@@ -66,32 +69,18 @@ def index():
         user_query = flask_request.form.get("query", "").strip()
         if user_query:
             try:
-                # Utilizziamo l'endpoint v1 con il modello gemini-1.5-flash pienamente compatibile con i token cloud
-                url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+                # Utilizzo diretto del modello con la libreria ufficiale Google
+                model = genai.GenerativeModel("gemini-1.5-flash")
+                prompt = f"Sei 'Studio Medico d'Élite', il sistema clinico del Dr. Diego Martinez. Rispondi in modo professionale ed empatico a questo quesito: {user_query}"
                 
-                headers = {'Content-Type': 'application/json'}
-                data = {
-                    "contents": [{
-                        "parts": [{"text": f"Sei 'Studio Medico d'Élite', il sistema clinico del Dr. Diego Martinez. Rispondi in modo professionale, rigoroso ed empatico a questo quesito clinico: {user_query}"}]
-                    }]
-                }
+                response = model.generate_content(prompt)
                 
-                response = requests.post(url, headers=headers, data=json.dumps(data))
-                res_json = response.json()
-                
-                if "candidates" in res_json and len(res_json["candidates"]) > 0:
-                    candidate = res_json["candidates"][0]
-                    if "content" in candidate and "parts" in candidate["content"]:
-                        bot_response = candidate["content"]["parts"][0].get("text", "").strip()
-                    else:
-                        bot_response = "Studio Medico d'Élite: Elaborazione completata dal nucleo neurale."
-                elif "error" in res_json:
-                    err_msg = res_json['error'].get('message', 'Errore sconosciuto')
-                    bot_response = f"Studio Medico d'Élite (Notifica Cloud): {err_msg}"
+                if response and response.text:
+                    bot_response = response.text.strip()
                 else:
-                    bot_response = f"Studio Medico d'Élite: Quesito '{user_query}' registrato correttamente."
+                    bot_response = "Studio Medico d'Élite: Risposta elaborata dal nucleo neurale."
             except Exception as e:
-                bot_response = f"Studio Medico d'Élite: Connessione neurale stabilita."
+                bot_response = f"Studio Medico d'Élite (Errore SDK): {str(e)}"
 
             chat_history_store.append({
                 "user": user_query,
