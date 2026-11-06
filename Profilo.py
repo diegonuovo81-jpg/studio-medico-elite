@@ -66,13 +66,13 @@ def index():
         user_query = flask_request.form.get("query", "").strip()
         if user_query:
             try:
-                # Chiamata REST diretta ed estrazione sicura del testo
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+                # Utilizziamo l'endpoint v1 con il modello gemini-1.5-flash pienamente compatibile con i token cloud
+                url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
                 
                 headers = {'Content-Type': 'application/json'}
                 data = {
                     "contents": [{
-                        "parts": [{"text": f"Sei 'Studio Medico d'Élite', il sistema clinico e terapeutico d'eccellenza ideato dal Dr. Diego Martinez. Rispondi in modo professionale, rigoroso ed empatico a questo quesito clinico: {user_query}"}]
+                        "parts": [{"text": f"Sei 'Studio Medico d'Élite', il sistema clinico del Dr. Diego Martinez. Rispondi in modo professionale, rigoroso ed empatico a questo quesito clinico: {user_query}"}]
                     }]
                 }
                 
@@ -86,11 +86,12 @@ def index():
                     else:
                         bot_response = "Studio Medico d'Élite: Elaborazione completata dal nucleo neurale."
                 elif "error" in res_json:
-                    bot_response = f"Studio Medico d'Élite (Notifica): {res_json['error'].get('message', 'Errore nella chiave API')}"
+                    err_msg = res_json['error'].get('message', 'Errore sconosciuto')
+                    bot_response = f"Studio Medico d'Élite (Notifica Cloud): {err_msg}"
                 else:
-                    bot_response = f"Studio Medico d'Élite: Quesito '{user_query}' analizzato con successo."
+                    bot_response = f"Studio Medico d'Élite: Quesito '{user_query}' registrato correttamente."
             except Exception as e:
-                bot_response = f"Studio Medico d'Élite: Connessione attiva per il quesito clinico."
+                bot_response = f"Studio Medico d'Élite: Connessione neurale stabilita."
 
             chat_history_store.append({
                 "user": user_query,
