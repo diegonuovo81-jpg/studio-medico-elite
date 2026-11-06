@@ -89,7 +89,6 @@ def index():
         if user_query:
             try:
                 if model is not None:
-                    # Chiamata diretta e reale al modello Gemini
                     response = model.generate_content(user_query)
                     bot_response = response.text
                 else:
