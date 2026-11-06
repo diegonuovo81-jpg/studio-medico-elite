@@ -1,109 +1,145 @@
-import os
-from flask import Flask, render_template_string, request
-import google.generativeai as genai
+export GEMINI_API_KEY="TUA_CHIAVE_API"
+pip install -U google-genai
+from google import genai
 
-app = Flask(__name__)
+client = genai.Client()
 
-# Recupero pulito della chiave API rimuovendo eventuali spazi accidentali
-API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
+interaction = client.interactions.create(
+    model="gemini-3.8-flash",
+    input="Spiega come funziona l'IA in poche parole"
+)
+print(interaction.output_text)
+from google import genai
 
-model = None
-if API_KEY:
-    try:
-        genai.configure(api_key=API_KEY)
-        generation_config = {
-            "temperature": 0.3,
-            "top_p": 0.95,
-            "top_k": 40,
-            "max_output_tokens": 8192,
+client = genai.Client()
+
+stream = client.interactions.create(
+    model="gemini-3.8-flash",
+    input="Spiega come funziona l'IA",
+    stream=True
+)
+for event in stream:
+    print(event)
+    from google import genai
+
+client = genai.Client()
+
+interaction1 = client.interactions.create(
+    model="gemini-3.8-flash",
+    input="Ho 2 cani in casa.",
+)
+print("Risposta 1:", interaction1.output_text)
+
+interaction2 = client.interactions.create(
+    model="gemini-3.8-flash",
+    input="Quante zampe ci sono in casa mia?",
+    previous_interaction_id=interaction1.id,
+)
+print("Risposta 2:", interaction2.output_text)
+import base64
+from google import genai
+
+client = genai.Client()
+
+# Carica un'immagine locale
+with open("sample.jpg", "rb") as f:
+    image_bytes = f.read()
+image_b64 = base64.b64encode(image_bytes).decode("utf-8")
+
+interaction = client.interactions.create(
+    model="gemini-3.8-flash",
+    input=[
+        {"type": "text", "text": "Confronta questa immagine locale e questo file audio remoto."},
+        {
+            "type": "image",
+            "data": image_b64,
+            "mime_type": "image/jpeg"
+        },
+        {
+            "type": "audio",
+            "uri": "https://storage.googleapis.com/generativeai-downloads/data/sample.mp3",
+            "mime_type": "audio/mp3"
         }
-        model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            generation_config=generation_config,
-            system_instruction=(
-                "Sei 'Studio Medico d'Élite', il sistema clinico e terapeutico d'eccellenza "
-                "ideato, voluto e sviluppato dal Dr. Diego Martinez. Rispondi sempre in modo "
-                "professionale, rigoroso, empatico, scientificamente accurato e profondamente conversazionale "
-                "a qualsiasi quesito clinico, terapeutico o diagnostico ti venga sottoposto."
-            ),
-        )
-    except Exception as e:
-        print(f"Errore di inizializzazione del modello: {e}")
+    ]
+)
+print(interaction.output_text)
+import json
+from google import genai
 
-chat_history_store = []
+client = genai.Client()
 
-HTML_PAGE = """
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Medico d'Élite | Dr. Diego Martinez</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f4f8; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
-        header { background: #0f4c81; color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; max-width: 800px; width: 100%; margin: 0 auto; box-sizing: border-box; }
-        .message { padding: 12px 16px; border-radius: 12px; max-width: 85%; line-height: 1.5; font-size: 15px; word-wrap: break-word; white-space: pre-wrap; }
-        .user { background: #3a86ff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .bot { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #0f4c81; }
-        .input-container { background: white; padding: 15px; display: flex; gap: 10px; max-width: 800px; width: 100%; margin: 0 auto; box-sizing: border-box; border-top: 1px solid #ddd; }
-        textarea { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; resize: none; height: 45px; box-sizing: border-box; }
-        button { background: #0f4c81; color: white; border: none; padding: 0 20px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
-        button:hover { background: #0b3c65; }
-    </style>
-</head>
-<body>
-    <header>Studio Medico d'Élite — Dr. Diego Martinez</header>
-    
-    <div class="chat-container" id="chatContainer">
-        <div class="message bot">Benvenuto nel terminale neurale di <b>Studio Medico d'Élite</b>. Sono operativo, sincronizzato e pronto a dialogare. Come posso assisterti oggi, Dr. Martinez?</div>
-        {% for m in history %}
-            <div class="message user">{{ m.user }}</div>
-            <div class="message bot">{{ m.bot }}</div>
-        {% endfor %}
-    </div>
+weather_tool = {
+    "type": "function",
+    "name": "get_current_temperature",
+    "description": "Ottiene la temperatura attuale per una determinata località.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "location": {
+                "type": "string",
+                "description": "Il nome della città, es. Londra",
+            },
+        },
+        "required": ["location"],
+    },
+}
 
-    <div class="input-container">
-        <form method="POST" style="display: flex; width: 100%; gap: 10px;">
-            <textarea name="query" placeholder="Scrivi qui il tuo quesito clinico..." autofocus required></textarea>
-            <button type="submit">Invia</button>
-        </form>
-    </div>
+available_functions = {
+    "get_current_temperature": lambda location: {
+        "location": location, "temperature": "22", "unit": "celsius"
+    },
+}
 
-    <script>
-        const container = document.getElementById('chatContainer');
-        container.scrollTop = container.scrollHeight;
-    </script>
-</body>
-</html>
-"""
+user_input = "Qual è la temperatura a Londra?"
+previous_id = None
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    global chat_history_store
-    bot_response = None
-    user_query = None
+while True:
+    interaction = client.interactions.create(
+        model="gemini-3.8-flash",
+        input=user_input,
+        tools=[weather_tool],
+        previous_interaction_id=previous_id,
+    )
 
-    if request.method == "POST":
-        user_query = request.form.get("query", "").strip()
-        if user_query:
-            try:
-                if model is not None:
-                    response = model.generate_content(user_query)
-                    bot_response = response.text
-                else:
-                    bot_response = "Attenzione: la chiave API di Google Gemini non risulta configurata correttamente nelle variabili d'ambiente di Render. Verifica che la chiave inizi con 'AIza'."
-            except Exception as e:
-                bot_response = f"Errore di comunicazione con il nucleo neurale: {str(e)}"
-
-            chat_history_store.append({
-                "user": user_query,
-                "bot": bot_response
+    function_results = []
+    for step in interaction.steps:
+        if step.type == "function_call":
+            result = available_functions[step.name](**step.arguments)
+            print(f"Chiamata a {step.name}({step.arguments}) → {result}")
+            function_results.append({
+                "type": "function_result",
+                "name": step.name,
+                "call_id": step.id,
+                "result": [{"type": "text", "text": json.dumps(result)}],
             })
 
-    return render_template_string(HTML_PAGE, history=chat_history_store)
+    if not function_results:
+        break
 
-port = int(os.environ.get("PORT", 10000))
+    user_input = function_results
+    previous_id = interaction.id
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=port)
+print(interaction.output_text)
+import time
+from google import genai
+
+client = genai.Client()
+
+interaction = client.interactions.create(
+    model="gemini-3.8-flash",
+    input="Scrivi un'analisi dettagliata sull'impatto dell'intelligenza artificiale nella sanità moderna.",
+    background=True,
+)
+print(f"Attività in background avviata: {interaction.id}")
+
+# Controllo dello stato (Polling)
+while True:
+    result = client.interactions.get(interaction.id)
+    print(f"Stato: {result.status}")
+    if result.status == "completed":
+        print(f"\nRisultato:\n{result.output_text}")
+        break
+    elif result.status == "failed":
+        print(f"Fallito: {result.error}")
+        break
+    time.sleep(5)
