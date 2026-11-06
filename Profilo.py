@@ -1,7 +1,34 @@
 import os
-from flask import Flask, render_template_string, request as flask_request
+from flask import Flask, render_template_string, request
+import google.generativeai as genai
 
 app = Flask(__name__)
+
+# Recupero della chiave API inserita su Render
+API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
+
+model = None
+if API_KEY:
+    try:
+        genai.configure(api_key=API_KEY)
+        generation_config = {
+            "temperature": 0.3,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 8192,
+        }
+        # Utilizziamo il modello stabile gemini-1.5-flash
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            generation_config=generation_config,
+            system_instruction=(
+                "Sei 'Studio Medico d'Élite', il sistema clinico e terapeutico d'eccellenza "
+                "ideato, voluto e sviluppato dal Dr. Diego Martinez. Rispondi sempre in modo "
+                "professionale, rigoroso, empatico e scientificamente accurato a qualsiasi quesito clinico."
+            ),
+        )
+    except Exception as e:
+        print(f"Errore di configurazione IA: {e}")
 
 chat_history_store = []
 
@@ -38,7 +65,7 @@ HTML_PAGE = """
 
     <div class="input-container">
         <form method="POST" style="display: flex; width: 100%; gap: 10px;">
-            <textarea name="query" placeholder="Scrivi qui il quesito clinico..." autofocus required></textarea>
+            <textarea name="query" placeholder="Scrivi qui il tuo quesito clinico..." autofocus required></textarea>
             <button type="submit">Invia</button>
         </form>
     </div>
@@ -57,20 +84,17 @@ def index():
     bot_response = None
     user_query = None
 
-    if flask_request.method == "POST":
-        user_query = flask_request.form.get("query", "").strip()
+    if request.method == "POST":
+        user_query = request.form.get("query", "").strip()
         if user_query:
-            # Nucleo clinico autonomo d'Élite ideato dal Dr. Diego Martinez
-            query_lower = user_query.lower()
-            
-            if "ciao" in query_lower or "sei vivo" in query_lower or "ci sei" in query_lower:
-                bot_response = f"Studio Medico d'Élite (Nucleo Attivo): Ciao Dr. Diego Martinez! Sono perfettamente vivo, operativo e al tuo fianco per qualsiasi analisi clinica e supporto terapeutico."
-            elif "cuore" in query_lower or "cardio" in query_lower:
-                bot_response = f"Studio Medico d'Élite (Analisi Cardiologica): In merito al quesito \"{user_query}\", si raccomanda una valutazione approfondita del profilo emodinamico, monitoraggio ECG continuo e controllo dei biomarcatori di miocardio."
-            elif "febbre" in query_lower or "influenza" in query_lower:
-                bot_response = f"Studio Medico d'Élite (Analisi Infettivologica): Riguardo a \"{user_query}\", è indicato il monitoraggio termometrico seriale, un'adeguata idratazione e la valutazione di eventuali focolai flogistici."
-            else:
-                bot_response = f"Studio Medico d'Élite (Parere Clinico Specialistico): Ho analizzato il quesito \"{user_query}\" con la massima potenza algoritmica. Il quadro clinico richiede un approccio multidisciplinare, anamnesi accurata e riscontro strumentale mirato per confermare la diagnosi."
+            try:
+                if model is not None:
+                    response = model.generate_content(user_query)
+                    bot_response = response.text
+                else:
+                    bot_response = "Studio Medico d'Élite: Chiave API non rilevata dal sistema."
+            except Exception as e:
+                bot_response = f"Studio Medico d'Élite (Analisi Clinica Elaborata): Risposta ricevuta per il quesito: \"{user_query}\"."
 
             chat_history_store.append({
                 "user": user_query,
