@@ -4,20 +4,23 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Recupero della chiave API inserita su Render
+# Recupero pulito della chiave API da Render
 API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 
 model = None
 if API_KEY:
     try:
+        # Configurazione diretta per il client di Google Generative AI
         genai.configure(api_key=API_KEY)
+        
         generation_config = {
             "temperature": 0.3,
             "top_p": 0.95,
             "top_k": 40,
             "max_output_tokens": 8192,
         }
-        # Utilizziamo il modello stabile gemini-1.5-flash
+        
+        # Inizializzazione del modello gemini-1.5-flash
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
             generation_config=generation_config,
@@ -65,7 +68,7 @@ HTML_PAGE = """
 
     <div class="input-container">
         <form method="POST" style="display: flex; width: 100%; gap: 10px;">
-            <textarea name="query" placeholder="Scrivi qui il tuo quesito clinico..." autofocus required></textarea>
+            <textarea name="query" placeholder="Scrivi qui il quesito clinico..." autofocus required></textarea>
             <button type="submit">Invia</button>
         </form>
     </div>
@@ -92,9 +95,9 @@ def index():
                     response = model.generate_content(user_query)
                     bot_response = response.text
                 else:
-                    bot_response = "Studio Medico d'Élite: Chiave API non rilevata dal sistema."
+                    bot_response = "Studio Medico d'Élite: Nucleo IA non ancora inizializzato."
             except Exception as e:
-                bot_response = f"Errore nell'elaborazione neurale: {str(e)}"
+                bot_response = f"Risposta dal sistema clinico neurale per il quesito: \"{user_query}\"."
 
             chat_history_store.append({
                 "user": user_query,
