@@ -2,11 +2,11 @@ import os
 from flask import Flask, render_template, request, jsonify
 import requests
 
-# Configura Flask specificando il percorso assoluto della cartella templates
+# Configura Flask con il nome corretto al singolare (template_folder)
 base_dir = os.path.abspath(os.path.dirname(__file__))
 templates_dir = os.path.join(base_dir, "templates")
 
-app = Flask(__name__, templates_folder=templates_dir)
+app = Flask(__name__, template_folder=templates_dir)
 
 # Recupera la chiave API dalle variabili d'ambiente di Render
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
