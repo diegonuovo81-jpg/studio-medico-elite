@@ -1,43 +1,38 @@
 import os
 from flask import Flask, render_template, request, jsonify
-import google.generativeai as genai
+import requests
 
 app = Flask(__name__)
 
-# Configurazione del "cervello" di Gemini tramite la variabile d'ambiente di Render
-API_KEY = os.environ.get("GEMINI_API_KEY")
-if API_KEY:
-    genai.configure(api_key=API_KEY)
-else:
-    print("ATTENZIONE: Chiave API di Gemini non trovata nelle variabili d'ambiente!")
+# Recupera la chiave API dalle variabili d'ambiente di Render
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
-# Configurazione del modello (puoi usare gemini-1.5-flash o gemini-1.5-pro)
-model = genai.GenerativeModel('gemini-1.5-flash')
-
-@app.route("/", methods=["GET"])
+@app.route("/")
 def home():
-    # Sostituisci 'index.html' con il nome del tuo file della grafica se si chiama diversamente
     return render_template("index.html")
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    data = request.json
-    user_message = data.get("message", "")
+    user_message = request.json.get("message", "")
     
-    if not user_message:
-        return jsonify({"response": "Nessun messaggio ricevuto."}), 400
-        
+    if not GEMINI_API_KEY:
+        return jsonify({"response": "Errore: Chiave API di Gemini non configurata nel server Render."})
+    
     try:
-        # Prompt per dare la personalità del Dr. Martinez all'intelligenza artificiale
-        prompt_medico = f"Agisci come il Dr. Diego Martinez nello Studio Medico d'Élite. Rispondi al seguente comando/messaggio: {user_message}"
+        # Chiamata HTTP diretta e leggera per non sovraccaricare il server
+        url = f"https://googleapis.com{GEMINI_API_KEY}"
+        payload = {"contents": [{"parts": [{"text": user_message}]}]}
+        headers = {"Content-Type": "application/json"}
         
-        response = model.generate_content(prompt_medico)
-        return jsonify({"response": response.text})
+        response = requests.post(url, json=payload, headers=headers)
+        res_data = response.json()
+        
+        bot_response = res_data['candidates'][0]['content']['parts'][0]['text']
+        return jsonify({"response": bot_response})
+    
     except Exception as e:
-        print(f"Errore durante la chiamata a Gemini: {e}")
-        return jsonify({"response": "Il sistema neurale ha riscontrato un errore di connessione con il modulo Gemini."}), 500
+        return jsonify({"response": "Il cervello neurale ha avuto un rallentamento. Riprova tra un istante."})
 
-# Questo blocco assicura che Flask legga la porta corretta passata da Render
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
