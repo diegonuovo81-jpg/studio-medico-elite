@@ -1,41 +1,51 @@
 import os
 from flask import Flask, render_template, request, jsonify
-import requests
+from flask_cors import CORS  # Evita blocchi di sicurezza tra frontend e backend
+import google.generativeai as genai
 
-# Configura Flask con il nome corretto al singolare (template_folder)
-base_dir = os.path.abspath(os.path.dirname(__file__))
-templates_dir = os.path.join(base_dir, "templates")
+app = Flask(__name__)
+CORS(app)  # Permette al terminale web di comunicare liberamente con Flask
 
-app = Flask(__name__, template_folder=templates_dir)
+# 1. Recupera la chiave API in modo sicuro da Render
+API_KEY = os.environ.get("GEMINI_API_KEY")
 
-# Recupera la chiave API dalle variabili d'ambiente di Render
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+if API_KEY:
+    genai.configure(api_key=API_KEY)
+else:
+    print("ERRORE: GEMINI_API_KEY non configurata su Render!")
 
 @app.route("/")
-def home():
+def index():
+    # Se il tuo file HTML si chiama index.html ed è nella cartella 'templates'
     return render_template("index.html")
 
-@app.route("/chat", methods=["POST"])
+# 2. Questa è la rotta che il tuo terminale userà per inviare i messaggi
+@app.route("/api/chat", methods=["POST"])
 def chat():
-    user_message = request.json.get("message", "")
+    data = request.get_json()
+    if not data or "message" not in data:
+        return jsonify({"error": "Messaggio mancante"}), 400
+        
+    user_message = data["message"]
     
-    if not GEMINI_API_KEY:
-        return jsonify({"response": "Errore: Chiave API di Gemini non configurata nel server Render."})
-    
+    if not API_KEY:
+        return jsonify({"answer": "Errore di sistema: Cervello virtuale non collegato (Chiave API mancante su Render)."}), 500
+
     try:
-        url = f"https://googleapis.com{GEMINI_API_KEY}"
-        payload = {"contents": [{"parts": [{"text": user_message}]}]}
-        headers = {"Content-Type": "application/json"}
+        # Usiamo il modello standard ultra-veloce per le chat
+        model = genai.GenerativeModel(
+            "gemini-1.5-flash",
+            system_instruction="Sei il Dr. Diego Martinez, titolare dello Studio Medico d'Élite. Rispondi usando un tono professionale, distaccato ma estremamente intelligente, coerente con l'interfaccia a terminale neurale."
+        )
         
-        response = requests.post(url, json=payload, headers=headers)
-        res_data = response.json()
+        response = model.generate_content(user_message)
+        return jsonify({"answer": response.text})
         
-        bot_response = res_data['candidates']['content']['parts']['text']
-        return jsonify({"response": bot_response})
-    
     except Exception as e:
-        return jsonify({"response": "Il cervello neurale ha avuto un rallentamento. Riprova tra un istante."})
+        return jsonify({"error": f"Errore durante l'elaborazione: {str(e)}"}), 500
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
+    # Render assegna una porta dinamica, questo assicura che Flask la legga correttamente
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+    
