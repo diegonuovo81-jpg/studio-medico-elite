@@ -1,2 +1,4 @@
-Flask
-google-genai
+flask
+flask-cors
+google-generativeai
+
