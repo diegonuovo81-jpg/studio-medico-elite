@@ -4,12 +4,12 @@ from flask import Flask, request, jsonify, render_template_string
 
 app = Flask(__name__)
 
-# CONFIGURAZIONE SICURA E CHIRURGICA DI GEMINI
+# CONFIGURAZIONE SICURA E UFFICIALE DI GEMINI
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
-# Inizializziamo l'SDK ufficiale di Google per evitare che la chiave si attacchi all'URL
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
+    # Impostiamo il modello. Puoi aggiungere qui le istruzioni di sistema iniziali
     model = genai.GenerativeModel('gemini-pro')
 else:
     model = None
@@ -127,6 +127,17 @@ HTML_TEMPLATE = """
             color: #0a0f1d;
             font-weight: bold;
         }
+        .recording {
+            background: #ff3b30 !important;
+            color: white !important;
+            box-shadow: 0 0 15px #ff3b30;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -154,7 +165,61 @@ HTML_TEMPLATE = """
     <script>
         const chatBox = document.getElementById('chat-box');
         const chatInput = document.getElementById('chat-input');
+        const voiceBtn = document.getElementById('voice-btn');
         
+        let isRecording = false;
+        let recognition = null;
+
+        // INIZIALIZZAZIONE DELLA VOCE (SBLOCCATA AL 100.000%)
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'it-IT';
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                isRecording = true;
+                voiceBtn.classList.add('recording');
+                chatInput.placeholder = "Ascolto in corso... Parla ora...";
+            };
+
+            recognition.onresult = (event) => {
+                const speechToText = event.results[0][0].transcript;
+                chatInput.value = speechToText;
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Errore microfono:", event.error);
+                stopRecordingState();
+            };
+
+            recognition.onend = () => {
+                stopRecordingState();
+            };
+        } else {
+            console.warn("Riconoscimento vocale non supportato su questo browser.");
+        }
+
+        function startVoiceRecognition() {
+            if (!recognition) {
+                alert("Il riconoscimento vocale non è supportato da questo browser. Usa Chrome o Safari.");
+                return;
+            }
+            if (isRecording) {
+                recognition.stop();
+                stopRecordingState();
+            } else {
+                recognition.start();
+            }
+        }
+
+        function stopRecordingState() {
+            isRecording = false;
+            voiceBtn.classList.remove('recording');
+            chatInput.placeholder = "Immetti comando o reperto medico...";
+        }
+
         function handleKeyPress(event) {
             if (event.key === 'Enter') {
                 sendMessage();
@@ -165,7 +230,6 @@ HTML_TEMPLATE = """
             const messageText = chatInput.value.trim();
             if (!messageText) return;
 
-            // Mostra messaggio utente
             appendMessage(messageText, 'user-msg');
             chatInput.value = '';
 
@@ -175,7 +239,7 @@ HTML_TEMPLATE = """
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: messageText })
                 });
-                const data = await response.get_json ? await response.get_json() : await response.json();
+                const data = await response.json();
                 
                 if (data.response) {
                     appendMessage(data.response, 'bot-msg');
@@ -194,11 +258,6 @@ HTML_TEMPLATE = """
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-
-        function startVoiceRecognition() {
-            // Logica del microfono nativa protetta
-            alert("Microfono attivo per la dettatura referti...");
-        }
     </script>
 </body>
 </html>
@@ -208,11 +267,10 @@ HTML_TEMPLATE = """
 def index():
     return render_template_string(HTML_TEMPLATE)
 
-# IL PONTE DI COLLEGAMENTO CON IL CERVELLO DI GEMINI
 @app.route('/chat', methods=['POST'])
 def chat_endpoint():
     if not model:
-        return jsonify({"error": "Errore: Il cervello virtuale non è configurato. Controlla GEMINI_API_KEY su Render."}), 500
+        return jsonify({"error": "Errore: Il cervello virtuale non è configurato. Incolla la chiave esatta su Render."}), 500
     try:
         data = request.get_json()
         user_message = data.get("message", "")
@@ -222,7 +280,7 @@ def chat_endpoint():
         response = model.generate_content(user_message)
         return jsonify({"response": response.text})
     except Exception as e:
-        return jsonify({"error": f"Errore interno nell'elaborazione del comando: {str(e)}"}), 500
+        return jsonify({"error": f"Errore nell'elaborazione del comando: {str(e)}"}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
