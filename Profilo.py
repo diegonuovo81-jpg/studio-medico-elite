@@ -155,7 +155,6 @@ HTML_TEMPLATE = """
         let isRecording = false;
         let recognition = null;
 
-        // Inizializzazione Riconoscimento Vocale
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
@@ -163,7 +162,7 @@ HTML_TEMPLATE = """
             recognition.continuous = false;
 
             recognition.onresult = function(event) {
-                const testoVocale = event.results[0][0].transcript;
+                const testoVocale = event.results.transcript;
                 chatInput.value = testoVocale;
                 toggleVoiceRecordingState(false);
             };
@@ -194,14 +193,15 @@ HTML_TEMPLATE = """
         function toggleVoiceRecordingState(recording) {
             isRecording = recording;
             const btn = document.getElementById('voice-btn');
-            btn.style.background = recording ? '#ff4d4d' : '#e1ecf7';
+            if (btn) {
+                btn.style.background = recording ? '#ff4d4d' : '#e1ecf7';
+            }
         }
 
-        // Gestione Caricamento Immagini
         fotoInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                appendMessage(`Sistema: File "${file.name}" caricato correttamente. Pronto per l'analisi visiva.`, 'bot-msg');
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                appendMessage(`Sistema: File "${files[0].name}" caricato correttamente. Pronto per l'analisi visiva.`, 'bot-msg');
             }
         });
 
@@ -249,18 +249,17 @@ def index():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    data = request.get_json()
+    data = request.get_json() or {}
     user_message = data.get("message", "")
     
     if not GEMINI_API_KEY:
         return jsonify({"response": "Nucleo neurale non configurato. Inserisci la GEMINI_API_KEY su Render."})
 
-    # Chiamata API standard a Gemini
     url = f"https://googleapis.com{GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
     payload = {
         "contents": [{
-            "parts": [{"text": f"Agisci come il cervello virtuale e assistente del Dr. Martinez all'interno dello Studio Medico d'Élite. Rispondi in modo professionale ed efficiente. Messaggio del dottore: {user_message}"}]
+            "parts": [{"text": f"Agisci come il cervello virtuale dello Studio Medico d'Élite per il Dr. Martinez. Rispondi brevemente e professionalmente. Messaggio: {user_message}"}]
         }]
     }
 
@@ -278,8 +277,8 @@ def chat():
         return jsonify({"response": bot_response})
 
     except Exception as e:
-        print(f"Errore durante la chiamata: {e}")
-        return jsonify({"response": "Errore interno nell'elaborazione del comando neurale."}), 500
+        print(f"Errore chiamata API: {e}")
+        return jsonify({"response": "Errore interno nell'elaborazione del comando."}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
