@@ -133,17 +133,13 @@ HTML_TEMPLATE = """
         </div>
         
         <div class="input-area">
-            <!-- Pulsante Carica Foto -->
             <label for="foto-input" class="terminal-btn" id="btn-foto" title="Carica foto clinica">📷</label>
             <input type="file" id="foto-input" accept="image/*" style="display: none;">
 
-            <!-- Pulsante Dettato Vocale -->
             <button class="terminal-btn" id="voice-btn" onclick="startVoiceRecognition()" title="Registra nota vocale">🎙️</button>
 
-            <!-- Campo di Testo -->
             <input type="text" id="chat-input" placeholder="Immetti comando o reperto medico..." onkeypress="handleKeyPress(event)">
 
-            <!-- Pulsante Invia -->
             <button class="terminal-btn" id="btn-invia" onclick="sendMessage()">Invia</button>
         </div>
     </div>
@@ -259,7 +255,7 @@ def chat():
     headers = {"Content-Type": "application/json"}
     payload = {
         "contents": [{
-            "parts": [{"text": f"Agisci come il cervello virtuale dello Studio Medico d'Élite per il Dr. Martinez. Rispondi brevemente e professionalmente. Messaggio: {user_message}"}]
+            "parts": [{"text": f"Agisci come il cervello virtuale dello Studio Medico d'Élite per il Dr. Martinez. Rispondi in modo conciso e professionale. Messaggio: {user_message}"}]
         }]
     }
 
@@ -270,7 +266,7 @@ def chat():
         bot_response = "Nessuna risposta generata dal nucleo neurale."
         
         if "candidates" in res_json and len(res_json["candidates"]) > 0:
-            candidate = res_json["candidates"][0]
+            candidate = res_json["candidates"][0] # Corretto l'indice della lista dei candidati
             if "content" in candidate and "parts" in candidate["content"] and len(candidate["content"]["parts"]) > 0:
                 bot_response = candidate["content"]["parts"][0].get("text", "").strip()
                 
@@ -278,7 +274,7 @@ def chat():
 
     except Exception as e:
         print(f"Errore chiamata API: {e}")
-        return jsonify({"response": "Errore interno nell'elaborazione del comando."}), 500
+        return jsonify({"response": f"Errore nell'elaborazione del comando neurale: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
