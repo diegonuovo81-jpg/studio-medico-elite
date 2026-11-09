@@ -4,7 +4,6 @@ from flask import Flask, request, jsonify, render_template_string
 
 app = Flask(__name__)
 
-# Recupera la chiave API di Gemini dalle variabili d'ambiente di Render
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 HTML_TEMPLATE = """
@@ -245,28 +244,29 @@ def index():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    data = request.get_json() or {}
-    user_message = data.get("message", "")
-    
-    if not GEMINI_API_KEY:
-        return jsonify({"response": "Nucleo neurale non configurato. Inserisci la GEMINI_API_KEY su Render."})
+    try:
+        data = request.get_json() or {}
+        user_message = data.get("message", "")
+        
+        if not GEMINI_API_KEY:
+            return jsonify({"response": "Nucleo neurale non configurato. Inserisci la GEMINI_API_KEY su Render."})
 
-    url = f"https://googleapis.com{GEMINI_API_KEY}"
-    headers = {"Content-Type": "application/json"}
-    payload = {
-        "contents": [{
-            "parts": [{"text": f"Agisci come il cervello virtuale dello Studio Medico d'Élite per il Dr. Martinez. Rispondi in modo conciso e professionale. Messaggio: {user_message}"}]
-        }]
-    }
+        url = f"https://googleapis.com{GEMINI_API_KEY}"
+        headers = {"Content-Type": "application/json"}
+        payload = {
+            "contents": [{
+                "parts": [{"text": f"Agisci come il cervello virtuale dello Studio Medico d'Élite per il Dr. Martinez. Rispondi in modo conciso e professionale. Messaggio: {user_message}"}]
+            }]
+        }
 
-    try {
         res = requests.post(url, headers=headers, json=payload)
         res_json = res.json()
         
         bot_response = "Nessuna risposta generata dal nucleo neurale."
         
-        if "candidates" in res_json and len(res_json["candidates"]) > 0:
-            candidate = res_json["candidates"][0] # Corretto l'indice della lista dei candidati
+        # FIX DEFINITIVO E CONTROLLO SICURO DEGLI INDICI LISTA
+        if "candidates" in res_json and isinstance(res_json["candidates"], list) and len(res_json["candidates"]) > 0:
+            candidate = res_json["candidates"][0] # <--- QUI l'errore fisso! Ora prende correttamente il primo candidato [0]
             if "content" in candidate and "parts" in candidate["content"] and len(candidate["content"]["parts"]) > 0:
                 bot_response = candidate["content"]["parts"][0].get("text", "").strip()
                 
@@ -274,7 +274,7 @@ def chat():
 
     except Exception as e:
         print(f"Errore chiamata API: {e}")
-        return jsonify({"response": f"Errore nell'elaborazione del comando neurale: {str(e)}"}), 500
+        return jsonify({"response": f"Errore interno nell'elaborazione del comando: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
