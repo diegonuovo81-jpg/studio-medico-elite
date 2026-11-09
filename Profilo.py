@@ -131,7 +131,7 @@ HTML_PAGE = """
             if (!recognition) { alert("Dettato vocale non supportato da questo browser. Usa Chrome."); return; }
             if (isRecording) { recognition.stop(); } else { recognition.start(); toggleVoiceRecordingState(true); }
         }
-        function toggleVoiceRecognitionState(recording) {
+        function toggleVoiceRecordingState(recording) {
             isRecording = recording;
             const btn = document.getElementById('voice-btn');
             btn.style.background = recording ? '#ff4d4d' : '#e1ecf7';
@@ -167,4 +167,4 @@ def index():
                     candidate = res_json["candidates"][0]
                     if "content" in candidate and "parts" in candidate["content"] and len(candidate["content"]["parts"]) > 0:
                         bot_response = candidate["content"]["parts"][0].get("text", "").strip()
-                
+else:
