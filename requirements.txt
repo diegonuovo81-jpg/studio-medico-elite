@@ -1,6 +1,4 @@
-flask
-google-genai>=0.1.0
-gunicorn
+pip install -r requirements.txt
 
 
 
