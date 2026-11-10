@@ -9,7 +9,6 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
-    # MODELLO AGGIORNATO: Accetta nativamente le nuove chiavi che iniziano con 'AQ.'
     model = genai.GenerativeModel('gemini-1.5-flash')
 else:
     model = None
@@ -183,8 +182,9 @@ HTML_TEMPLATE = """
                 chatInput.placeholder = "Ascolto in corso... Parla ora...";
             };
 
+            // MODIFICA CHIRURGICA: Scrive direttamente nella casella di testo visibile a schermo!
             recognition.onresult = (event) => {
-                const speechToText = event.results.transcript;
+                const speechToText = event.results[0][0].transcript;
                 chatInput.value = speechToText;
             };
 
@@ -283,7 +283,6 @@ def chat_endpoint():
     except Exception as e:
         return jsonify({"error": f"Errore nell'elaborazione del comando: {str(e)}"}), 500
 
-# ROTTE DI BACKEND DI SICUREZZA PER FOTO E REFERTI
 @app.route('/api/camera', methods=['POST'])
 def handle_camera():
     return jsonify({"status": "success", "message": "Telecamera allineata"})
