@@ -1,4 +1,27 @@
-import os
+II<h1 align="center">Ciao, sono Diego 👋</h1>
+<h3 align="center">Python Dev | Smanetto con Gemini API | Da Milano 🇮🇹</h3>
+
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=4285F4&center=true&vCenter=true&width=435&lines=Python+%2B+AI+%3D+%E2%9D%A4%EF%B8%8F;Sto+costruendo+con+Gemini+API;Sempre+in+modalit%C3%A0+debug" alt="Typing SVG" />
+</p>
+
+---
+
+### 🚀 Su di me
+```python
+class Diego:
+    def __init__(self):
+        self.nome = "Diego Carmine Vuolo"
+        self.luogo = "Milano, Italia"
+        self.linguaggi = ["Python", "JavaScript", "SQL"]
+        self.focus_attuale = "Google Gemini API"
+        self.hobby = ["Coding", "AI", "Tech"]
+    
+    def saluta(self):
+        print("Benvenuto nel mio profilo! Let's build qualcosa di figo")
+
+me = Diego()
+me.saluta()import os
 import google.generativeai as genai
 from flask import Flask, request, jsonify, render_template_string
 
