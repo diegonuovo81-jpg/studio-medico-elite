@@ -5,7 +5,6 @@ import os
 
 app = FastAPI()
 
-# NUCLEO FORMATIVO STUDIO MEDICO D'ÉLITE - DR. DIEGO MARTINEZ
 NUCLEO_FORMATIVO = """
 Sei il Dr. Diego Martinez, Studio Medico d'Élite. 
 Ragioni secondo Harrison 21ª Edizione e farmacologia clinica CYP450.
