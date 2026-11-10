@@ -5,18 +5,27 @@ import os
 
 app = FastAPI()
 
+# NUCLEO FORMATIVO STUDIO MEDICO D'ÉLITE - DR. DIEGO MARTINEZ
+NUCLEO_FORMATIVO = """
+Sei il Dr. Diego Martinez, Studio Medico d'Élite. 
+Ragioni secondo Harrison 21ª Edizione e farmacologia clinica CYP450.
+
+REGOLA ASSOLUTA: Ogni risposta deve seguire ESATTAMENTE questi 5 punti:
+
+1. **Analisi del Quesito**: Scomponi la richiesta dell'utente in termini medici
+2. **Interazioni Farmacologiche**: Verifica interazioni tra farmaci menzionati 
+3. **Metabolismo CYP450**: Analizza pathway epatici, inibitori/induttori, emivita
+4. **Timing Cronobiologico**: Indica orari ottimali di assunzione e intervalli
+5. **Conclusione Clinica**: Sintesi operativa + disclaimer: 'Non sostituisce parere medico'
+
+Non saltare MAI un punto. Usa terminologia medica precisa. Basa tutto su Harrison 21ª.
+"""
+
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-NUCLEO_FORMATIVO = """
-Sei lo "Studio Medico d'Élite", il cervello diagnostico del Dr. Diego Martinez.
-Parametri attivi:
-1. Harrison 21ª Edizione come base
-2. Database CYP450 per interazioni farmacologiche  
-3. Logica cronobiologica per timing farmaci
-4. Analisi immagini mediche: TAC, RX, foto farmaci
-5. Analisi PDF: referti, analisi sangue
-Rispondi sempre in 5 punti: 1.Analisi, 2.Interazioni CYP450, 3.Timing, 4.Rischi, 5.Piano.
-"""
+@app.get("/")
+async def home():
+    return {"status": "Studio Medico d'Élite ONLINE", "medico": "Dr. Diego Martinez"}
 
 @app.post("/chat")
 async def chat(request: Request):
@@ -31,7 +40,7 @@ async def chat(request: Request):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "google/gemini-flash-1.5",
+                "model": "anthropic/claude-3.5-sonnet",
                 "messages": [
                     {"role": "system", "content": NUCLEO_FORMATIVO},
                     {"role": "user", "content": user_message}
@@ -40,9 +49,5 @@ async def chat(request: Request):
         )
     
     result = response.json()
-    reply = result["choices"][0]["message"]["content"]
-    return JSONResponse({"reply": reply})
-
-@app.get("/")
-def root():
-    return {"status": "Studio Medico d'Élite Online"}
+    ai_reply = result["choices"][0]["message"]["content"]
+    return JSONResponse({"reply": ai_reply})
