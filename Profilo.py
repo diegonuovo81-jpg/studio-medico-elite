@@ -1,31 +1,12 @@
-II<h1 align="center">Ciao, sono Diego 👋</h1>
-<h3 align="center">Python Dev | Smanetto con Gemini API | Da Milano 🇮🇹</h3>
-
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=4285F4&center=true&vCenter=true&width=435&lines=Python+%2B+AI+%3D+%E2%9D%A4%EF%B8%8F;Sto+costruendo+con+Gemini+API;Sempre+in+modalit%C3%A0+debug" alt="Typing SVG" />
-</p>
-
----
-
-### 🚀 Su di me
-```python
-class Diego:
-    def __init__(self):
-        self.nome = "Diego Carmine Vuolo"
-        self.luogo = "Milano, Italia"
-        self.linguaggi = ["Python", "JavaScript", "SQL"]
-        self.focus_attuale = "Google Gemini API"
-        self.hobby = ["Coding", "AI", "Tech"]
-    
-    def saluta(self):
-        print("Benvenuto nel mio profilo! Let's build qualcosa di figo")
-
-me = Diego()
-me.saluta()import os
+import os
 import google.generativeai as genai
 from flask import Flask, request, jsonify, render_template_string
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Max 16MB per upload
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # CONFIGURAZIONE SICURA E UFFICIALE DI GEMINI
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
@@ -94,6 +75,7 @@ HTML_TEMPLATE = """
             padding: 10px 15px;
             border-radius: 5px;
             line-height: 1.4;
+            word-wrap: break-word;
         }
         .user-msg {
             background: rgba(0, 242, 254, 0.15);
@@ -105,6 +87,12 @@ HTML_TEMPLATE = """
             align-self: flex-start;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        .file-msg {
+            background: rgba(255, 193, 7, 0.15);
+            align-self: flex-end;
+            border: 1px solid #ffc107;
+            font-style: italic;
+        }
         .input-area {
             display: flex;
             padding: 15px;
@@ -112,6 +100,7 @@ HTML_TEMPLATE = """
             border-top: 1px solid rgba(0, 242, 254, 0.3);
             gap: 10px;
             align-items: center;
+            position: relative;
         }
         .terminal-btn {
             background: #e1ecf7;
@@ -160,6 +149,34 @@ HTML_TEMPLATE = """
             50% { opacity: 0.6; }
             100% { opacity: 1; }
         }
+        /* NUOVO: Menu del tasto + */
+        .plus-menu {
+            position: absolute;
+            bottom: 70px;
+            left: 15px;
+            background: rgba(10, 15, 29, 0.98);
+            border: 1px solid var(--neon-blue);
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 100;
+        }
+        .plus-menu.show {
+            display: flex;
+        }
+        .plus-menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+            transition: all 0.2s;
+        }
+        .plus-menu-item:hover {
+            background: rgba(0, 242, 254, 0.2);
+        }
+        .plus-menu-item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
@@ -169,12 +186,19 @@ HTML_TEMPLATE = """
     <div class="terminal-container">
         <div class="terminal-header">SISTEMA DI DIAGNOSTICA NEURALE - DR. MARTINEZ</div>
         <div class="chat-box" id="chat-box">
-            <div class="message bot-msg">Sono operativo, vivo e collegato con te. Come posso assisterti oggi, Dr. Martinez?</div>
+            <div class="message bot-msg">Sono operativo, vivo e collegato con te. Usa il tasto + per caricare foto o referti. Come posso assisterti oggi, Dr. Martinez?</div>
         </div>
         
         <div class="input-area">
-            <label for="foto-input" class="terminal-btn" id="btn-foto" title="Carica foto clinica" onclick="handleCameraAction()">📷</label>
-            <input type="file" id="foto-input" accept="image/*" style="display: none;">
+            <!-- NUOVO: Tasto + con menu -->
+            <button class="terminal-btn" id="btn-plus" title="Allega file" onclick="togglePlusMenu()">+</button>
+            <div class="plus-menu" id="plus-menu">
+                <div class="plus-menu-item" onclick="triggerUpload('image')">📷 Carica Foto Clinica</div>
+                <div class="plus-menu-item" onclick="triggerUpload('pdf')">📄 Carica Referto PDF</div>
+            </div>
+            
+            <input type="file" id="file-input-image" accept="image/*" style="display: none;">
+            <input type="file" id="file-input-pdf" accept=".pdf" style="display: none;">
 
             <button class="terminal-btn" id="voice-btn" onclick="startVoiceRecognition()" title="Registra nota vocale">🎙️</button>
 
@@ -188,6 +212,7 @@ HTML_TEMPLATE = """
         const chatBox = document.getElementById('chat-box');
         const chatInput = document.getElementById('chat-input');
         const voiceBtn = document.getElementById('voice-btn');
+        const plusMenu = document.getElementById('plus-menu');
         
         let isRecording = false;
         let recognition = null;
@@ -205,7 +230,6 @@ HTML_TEMPLATE = """
                 chatInput.placeholder = "Ascolto in corso... Parla ora...";
             };
 
-            // MODIFICA CHIRURGICA: Scrive direttamente nella casella di testo visibile a schermo!
             recognition.onresult = (event) => {
                 const speechToText = event.results[0][0].transcript;
                 chatInput.value = speechToText;
@@ -240,13 +264,66 @@ HTML_TEMPLATE = """
             chatInput.placeholder = "Immetti comando o reperto medico...";
         }
 
-        function handleCameraAction() {
-            console.log("Interfaccia telecamera attivata.");
-        }
-
         function handleKeyPress(event) {
             if (event.key === 'Enter') {
                 sendMessage();
+            }
+        }
+
+        // NUOVO: Gestione menu +
+        function togglePlusMenu() {
+            plusMenu.classList.toggle('show');
+        }
+
+        // Chiudi menu se clicchi fuori
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#btn-plus') && !event.target.closest('.plus-menu')) {
+                plusMenu.classList.remove('show');
+            }
+        });
+
+        function triggerUpload(type) {
+            plusMenu.classList.remove('show');
+            if (type === 'image') {
+                document.getElementById('file-input-image').click();
+            } else if (type === 'pdf') {
+                document.getElementById('file-input-pdf').click();
+            }
+        }
+
+        // NUOVO: Upload foto
+        document.getElementById('file-input-image').addEventListener('change', function(e) {
+            uploadFile(e.target.files[0], 'image');
+        });
+
+        // NUOVO: Upload PDF
+        document.getElementById('file-input-pdf').addEventListener('change', function(e) {
+            uploadFile(e.target.files[0], 'pdf');
+        });
+
+        async function uploadFile(file, fileType) {
+            if (!file) return;
+            
+            appendMessage(`Caricamento ${fileType === 'image' ? 'foto' : 'referto'}: ${file.name}...`, 'file-msg');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', fileType);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    appendMessage(`✅ ${data.message}`, 'bot-msg');
+                } else {
+                    appendMessage(`❌ Errore: ${data.message}`, 'bot-msg');
+                }
+            } catch (error) {
+                appendMessage("❌ Errore di connessione durante l'upload.", 'bot-msg');
             }
         }
 
@@ -294,7 +371,7 @@ def index():
 @app.route('/chat', methods=['POST'])
 def chat_endpoint():
     if not model:
-        return jsonify({"error": "Errore: Il cervello virtuale non è configurato. Incolla la chiave esatta su Render."}), 500
+        return jsonify({"error": "Errore: Il cervello virtuale non è configurato. Imposta GEMINI_API_KEY su Render."}), 500
     try:
         data = request.get_json()
         user_message = data.get("message", "")
@@ -306,13 +383,33 @@ def chat_endpoint():
     except Exception as e:
         return jsonify({"error": f"Errore nell'elaborazione del comando: {str(e)}"}), 500
 
-@app.route('/api/camera', methods=['POST'])
-def handle_camera():
-    return jsonify({"status": "success", "message": "Telecamera allineata"})
+# NUOVO: Endpoint unico per gestire upload foto e referti
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"status": "error", "message": "Nessun file ricevuto"}), 400
+    
+    file = request.files['file']
+    file_type = request.form.get('type', 'file')
+    
+    if file.filename == '':
+        return jsonify({"status": "error", "message": "Nome file vuoto"}), 400
 
-@app.route('/api/referti', methods=['POST'])
-def handle_referti():
-    return jsonify({"status": "success", "message": "Canale referti pronto"})
+    if file:
+        filename = secure_filename(file.filename)
+        save_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(save_path)
+        
+        if file_type == 'image':
+            msg = f"Foto clinica '{filename}' caricata. Pronta per analisi."
+            # Qui puoi aggiungere: gemini analizza l'immagine
+        else:
+            msg = f"Referto PDF '{filename}' caricato. Pronto per elaborazione."
+            # Qui puoi aggiungere: estrai testo dal PDF e mandalo a Gemini
+            
+        return jsonify({"status": "success", "message": msg})
+    
+    return jsonify({"status": "error", "message": "Errore salvataggio file"}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
