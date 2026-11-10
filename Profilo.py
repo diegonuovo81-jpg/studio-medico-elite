@@ -150,9 +150,10 @@ HTML_TEMPLATE = """
             padding: 15px;
             background: rgba(0, 0, 0, 0.4);
             border-top: 1px solid rgba(0, 242, 254, 0.3);
-            gap: 10px;
+            gap: 8px;
             align-items: center;
             position: relative;
+            flex-wrap: nowrap;
         }
         .terminal-btn {
             background: linear-gradient(135deg, #e1ecf7, #b8d4f0);
@@ -161,12 +162,14 @@ HTML_TEMPLATE = """
             padding: 12px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
             font-weight: bold;
+            flex-shrink: 0;
+            min-width: 45px;
         }
         .terminal-btn:hover {
             background: var(--neon-blue);
@@ -182,6 +185,7 @@ HTML_TEMPLATE = """
             border-radius: 8px;
             font-family: 'Roboto Mono', monospace;
             transition: all 0.3s;
+            min-width: 0;
         }
         #chat-input:focus {
             outline: none;
@@ -192,6 +196,9 @@ HTML_TEMPLATE = """
             background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
             color: #fff;
             text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
         .recording {
             background: var(--danger-red) !important;
