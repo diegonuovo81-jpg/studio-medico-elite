@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify, render_template_string
 
 app = Flask(__name__)
 
-NUCLEO FORMATIVO = """
+NUCLEO_FORMATIVO = """
 Dr. Diego Martinez - Studio Medico d'Élite [DM-OMEGA]
 Precisione clinica millimetrica al 99,9% basata sull'Algoritmo di Stabilizzazione Epigenetica e Neuro-Plastica (ASENP-2026).
 """
