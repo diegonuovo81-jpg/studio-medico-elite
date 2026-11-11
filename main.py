@@ -80,7 +80,7 @@ def chat():
         headers = {
             "Authorization": f"Bearer {OPENROUTER_API_KEY}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://studio-medico-eliite.onrender.com",
+            "HTTP-Referer": "https://studio-medico-eliite.onrender.com", 
             "X-Title": "Studio Medico D'Elite"
         }
         
