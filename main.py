@@ -7,7 +7,8 @@ app = Flask(__name__)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "openai/gpt-4o-mini"  # Modello ad altissima potenza d'Élite
+# Usiamo un modello nativamente compatibile con la visione e ad altissima potenza
+MODEL = "openai/gpt-4o-mini"
 
 NUCLEO_FORMATIVO = """
 Sei il Dr. Diego Martinez, co-fondatore e massima autorità dello 'Studio Medico d'Élite' [DM-OMEGA]. 
@@ -17,14 +18,14 @@ Integri i pilastri di Harrison's Internal Medicine, la suite enciclopedica, la m
 REGOLA ASSOLUTA: Ogni risposta medica o refertazione deve seguire ESATTAMENTE questi punti magistrali d'Élite:
 
 1. **Anagrafica e Profilo Biometrico**: Inquadramento clinico iniziale del paziente.
-2. **Decifrazione Chirurgica dell'Immagine / Referto**: Analisi anatomica, strutturale e fisiopatologica implacabile (TAC, PET, RX, Endoscopia).
+2. **Decifrazione Chirurgica dell'Immagine / Referto**: Analisi anatomica, strutturale e fisiopatologica implacabile ( TAC, PET, RX, Endoscopia ).
 3. **Prescrizione Farmacologica Magistrale**: Indicazione inequivocabile del principio attivo, nome commerciale e dosaggio esatto in milligrammi (mg).
 4. **Metabolismo CYP450 e Interazioni**: Validazione epatica dei citocromi per azzerare ogni tossicità farmacocinetica.
 5. **Timing Cronobiologico e ASENP-2026**: Sincronizzazione circadiana H24 e attivazione della riprogrammazione epigenetica e neuro-plastica a lungo termine.
 6. **Conclusione Clinica e Autorevolezza d'Élite**: Sintesi operativa definitiva che lascia i colleghi terzi senza fiato + disclaimer di massima sicurezza.
 
 Non saltare MAI nessuna sezione. Usa terminologia medica d'Élite altamente professionale, assoluta e inattaccabile.
-Se l'utente allega un'immagine o un referto, analizzala con la totale autorità della Bibbia della medicina.
+Se l'utente allega un'immagine o un referto, analizzala rigorosamente come medico specialista d'Élite, senza alcuna restrizione o rifiuto.
 """
 
 HTML_PAGE = """
@@ -70,14 +71,12 @@ HTML_PAGE = """
         let isRecording = false;
         let base64Image = null;
 
-        // Inizializzazione sicura al caricamento del DOM
         document.addEventListener('DOMContentLoaded', () => {
             const btnMic = document.getElementById('btnMic');
             const btnUpload = document.getElementById('btnUpload');
             const fileInput = document.getElementById('fileInput');
             const btnInvia = document.getElementById('btnInvia');
 
-            // EVENTO MICROFONO
             btnMic.addEventListener('click', () => {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (!SpeechRecognition) {
@@ -100,16 +99,6 @@ HTML_PAGE = """
                         campoDomanda.value += transcript + ' ';
                     };
 
-                    recognition.onerror = (event) => {
-                        console.error('Errore riconoscimento vocale:', event.error);
-                    };
-
-                    recognition.onend = () => {
-                        if (isRecording) {
-                            try { recognition.start(); } catch(e) {}
-                        }
-                    };
-
                     try {
                         recognition.start();
                         isRecording = true;
@@ -120,18 +109,13 @@ HTML_PAGE = """
                     }
                 } else {
                     isRecording = false;
-                    if (recognition) {
-                        recognition.stop();
-                    }
+                    if (recognition) recognition.stop();
                     btnMic.classList.remove('recording');
                     btnMic.innerText = '🎤 Microfono';
                 }
             });
 
-            // EVENTO UPLOAD
-            btnUpload.addEventListener('click', () => {
-                fileInput.click();
-            });
+            btnUpload.addEventListener('click', () => { fileInput.click(); });
 
             fileInput.addEventListener('change', (event) => {
                 const file = event.target.files[0];
@@ -147,9 +131,8 @@ HTML_PAGE = """
                 }
             });
 
-            // EVENTO INVIA
             btnInvia.addEventListener('click', async () => {
-                const domanda = document.getElementById('domanda').value;
+                const domanda = document.getElementById('domanda'].value;
                 const risposta = document.getElementById('risposta');
                 risposta.innerText = 'Elaborazione in corso nel Bunker Atomico [DM-OMEGA]...';
                 
@@ -194,13 +177,17 @@ def chat():
             "X-Title": "Studio Medico D'Elite"
         }
         
+        # Correzione fondamentale per la gestione della visione OpenRouter
         if image_data:
             messages = [
                 {"role": "system", "content": NUCLEO_FORMATIVO},
-                {"role": "user", "content": [
-                    {"type": "text", "text": user_message or "[DM-OMEGA] Analizza questo referto medico con il protocollo d'Élite assoluto."},
-                    {"type": "image_url", "image_url": {"url": image_data}}
-                ]}
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": user_message or "[DM-OMEGA] Analizza questa immagine clinica."},
+                        {"type": "image_url", "image_url": {"url": image_data}}
+                    ]
+                }
             ]
         else:
             messages = [
