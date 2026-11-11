@@ -178,7 +178,6 @@ DIAGNOSTICA NEURALE & ASENP-2026 — DR. DIEGO MARTINEZ
 
         return jsonify({"risposta": risposta_ai})
     
-    coroutines_error = None
     except Exception as e:
         return jsonify({"errore": f"Errore nel bunker [DM-OMEGA]: {str(e)}"}), 500
 
