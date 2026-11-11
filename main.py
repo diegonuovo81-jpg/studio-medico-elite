@@ -7,7 +7,6 @@ app = Flask(__name__)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-# Usiamo un modello nativamente compatibile con la visione e ad altissima potenza
 MODEL = "openai/gpt-4o-mini"
 
 NUCLEO_FORMATIVO = """
@@ -18,7 +17,7 @@ Integri i pilastri di Harrison's Internal Medicine, la suite enciclopedica, la m
 REGOLA ASSOLUTA: Ogni risposta medica o refertazione deve seguire ESATTAMENTE questi punti magistrali d'Élite:
 
 1. **Anagrafica e Profilo Biometrico**: Inquadramento clinico iniziale del paziente.
-2. **Decifrazione Chirurgica dell'Immagine / Referto**: Analisi anatomica, strutturale e fisiopatologica implacabile ( TAC, PET, RX, Endoscopia ).
+2. **Decifrazione Chirurgica dell'Immagine / Referto**: Analisi anatomica, strutturale e fisiopatologica implacabile (TAC, PET, RX, Endoscopia).
 3. **Prescrizione Farmacologica Magistrale**: Indicazione inequivocabile del principio attivo, nome commerciale e dosaggio esatto in milligrammi (mg).
 4. **Metabolismo CYP450 e Interazioni**: Validazione epatica dei citocromi per azzerare ogni tossicità farmacocinetica.
 5. **Timing Cronobiologico e ASENP-2026**: Sincronizzazione circadiana H24 e attivazione della riprogrammazione epigenetica e neuro-plastica a lungo termine.
@@ -36,10 +35,10 @@ HTML_PAGE = """
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body { background: #0a0a0a; color: #00ffff; font-family: monospace; margin: 0; padding: 20px; }
-        h1 { text-shadow: 0 0 10px #00ffff; text-align: center; font-size: 24px; }
+        h1 { text-shadow: 0 0 10px #00ffff; text-align: center; font-size: 22px; }
         .container { max-width: 600px; margin: 0 auto; }
         textarea { width: 100%; background: #1a1a1a; color: #00ffff; border: 1px solid #00ffff; padding: 10px; font-family: monospace; box-sizing: border-box; }
-        button { background: #00ffff; color: #000; border: none; padding: 15px; font-weight: bold; cursor: pointer; font-family: monospace; }
+        button { background: #00ffff; color: #000; border: none; padding: 15px; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 14px; }
         #risposta { margin-top: 20px; white-space: pre-wrap; background: #1a1a1a; padding: 15px; border: 1px solid #00ffff; min-height: 100px; }
         .controls { display: flex; gap: 10px; margin-top: 10px; }
         .btn-mic, .btn-upload { flex: 1; }
@@ -52,17 +51,17 @@ HTML_PAGE = """
 <body>
     <div class="container">
         <h1>STUDIO MEDICO D'ÉLITE [DM-OMEGA]</h1>
-        <div style="background: #1a1a1a; border: 1px solid #00ffff; padding: 10px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+        <div style="background: #1a1a1a; border: 1px solid #00ffff; padding: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; font-size: 13px;">
             SISTEMA DI DIAGNOSTICA NEURALE & ASENP-2026 — DR. MARTINEZ
         </div>
-        <textarea id="domanda" rows="4" placeholder="Immetti [DM-OMEGA] seguito da comando, anagrafica o richiesta clinica..."></textarea>
+        <textarea id="domanda" rows="4" placeholder="Immetti [DM-OMEGA] seguito da comando o richiesta clinica..."></textarea>
         <img id="preview" />
         <div class="controls">
-            <button class="btn-mic" id="btnMic" type="button">🎤 Microfono</button>
-            <button class="btn-upload" id="btnUpload" type="button">📎 Allega Referto</button>
-            <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none">
+            <button class="btn-mic" id="btnMic" onclick="toggleMic()" type="button">🎤 Microfono</button>
+            <button class="btn-upload" onclick="triggerUpload()" type="button">📎 Allega Referto</button>
+            <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none" onchange="handleFile(event)">
         </div>
-        <button class="btn-invia" id="btnInvia" type="button">INVIA AL BUNKER ATOMICO</button>
+        <button class="btn-invia" onclick="inviaDato()" type="button">INVIA AL BUNKER ATOMICO</button>
         <div id="risposta"></div>
     </div>
 
@@ -71,89 +70,109 @@ HTML_PAGE = """
         let isRecording = false;
         let base64Image = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnMic = document.getElementById('btnMic');
-            const btnUpload = document.getElementById('btnUpload');
-            const fileInput = document.getElementById('fileInput');
-            const btnInvia = document.getElementById('btnInvia');
+        // GESTIONE MICROFONO SEMPLIFICATA E DIRETTA
+        function toggleMic() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert('Riconoscimento vocale non supportato da questo browser. Usa Google Chrome.');
+                return;
+            }
 
-            btnMic.addEventListener('click', () => {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SpeechRecognition) {
-                    alert('Microfono non supportato su questo browser. Usa Chrome.');
-                    return;
-                }
-                
-                if (!isRecording) {
+            const btnMic = document.getElementById('btnMic');
+
+            if (!isRecording) {
+                try {
                     recognition = new SpeechRecognition();
                     recognition.lang = 'it-IT';
-                    recognition.continuous = true;
-                    recognition.interimResults = true;
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
 
                     recognition.onresult = (event) => {
-                        let transcript = '';
-                        for (let i = event.resultIndex; i < event.results.length; i++) {
-                            transcript += event.results[i][0].transcript;
-                        }
-                        const campoDomanda = document.getElementById('domanda');
-                        campoDomanda.value += transcript + ' ';
+                        const transcript = event.results[0][0].transcript;
+                        const campo = document.getElementById('domanda');
+                        campo.value += (campo.value ? ' ' : '') + transcript;
                     };
 
-                    try {
-                        recognition.start();
-                        isRecording = true;
-                        btnMic.classList.add('recording');
-                        btnMic.innerText = '🔴 Stop';
-                    } catch (e) {
-                        console.error(e);
-                    }
-                } else {
-                    isRecording = false;
-                    if (recognition) recognition.stop();
-                    btnMic.classList.remove('recording');
-                    btnMic.innerText = '🎤 Microfono';
-                }
-            });
-
-            btnUpload.addEventListener('click', () => { fileInput.click(); });
-
-            fileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        base64Image = e.target.result;
-                        const preview = document.getElementById('preview');
-                        preview.src = base64Image;
-                        preview.style.display = 'block';
+                    recognition.onerror = (event) => {
+                        console.error('Errore microfono:', event.error);
+                        stopMicState();
                     };
-                    reader.readAsDataURL(file);
-                }
-            });
 
-            btnInvia.addEventListener('click', async () => {
-                const domanda = document.getElementById('domanda'].value;
-                const risposta = document.getElementById('risposta');
-                risposta.innerText = 'Elaborazione in corso nel Bunker Atomico [DM-OMEGA]...';
-                
-                const payload = { message: domanda };
-                if (base64Image) {
-                    payload.image = base64Image;
-                }
+                    recognition.onend = () => {
+                        stopMicState();
+                    };
 
-                try {
-                    const res = await fetch('/chat', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(payload)
-                    });
-                    const data = await res.json();
-                    risposta.innerText = data.risposta || data.errore;
-                } catch (err) {
-                    risposta.innerText = 'Errore critico di connessione con il nucleo d\\'Élite: ' + err;
+                    recognition.start();
+                    isRecording = true;
+                    btnMic.classList.add('recording');
+                    btnMic.innerText = '🔴 Stop';
+                } catch (e) {
+                    console.error(e);
+                    stopMicState();
                 }
-            });
-        });
+            } else {
+                if (recognition) {
+                    try { recognition.stop(); } catch(e) {}
+                }
+                stopMicState();
+            }
+        }
+
+        function stopMicState() {
+            isRecording = false;
+            const btnMic = document.getElementById('btnMic');
+            btnMic.classList.remove('recording');
+            btnMic.innerText = '🎤 Microfono';
+        }
+
+        // GESTIONE UPLOAD FILE
+        function triggerUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    base64Image = e.target.result;
+                    const preview = document.getElementById('preview');
+                    preview.src = base64Image;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // GESTIONE INVIO AL SERVER
+        async function inviaDato() {
+            const domanda = document.getElementById('domanda').value;
+            const risposta = document.getElementById('risposta');
+            
+            if (!domanda.trim() && !base64Image) {
+                alert('Inserisci un comando o allega un referto prima di inviare.');
+                return;
+            }
+
+            risposta.innerText = 'Elaborazione in corso nel Bunker Atomico [DM-OMEGA]...';
+            
+            const payload = { message: domanda };
+            if (base64Image) {
+                payload.image = base64Image;
+            }
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                risposta.innerText = data.risposta || data.errore;
+            } catch (err) {
+                risposta.innerText = 'Errore di connessione con il server: ' + err;
+            }
+        }
     </script>
 </body>
 </html>
@@ -177,7 +196,6 @@ def chat():
             "X-Title": "Studio Medico D'Elite"
         }
         
-        # Correzione fondamentale per la gestione della visione OpenRouter
         if image_data:
             messages = [
                 {"role": "system", "content": NUCLEO_FORMATIVO},
