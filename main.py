@@ -59,4 +59,47 @@ HTML_PAGE = """
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({message: domanda})
             });
-           
+            const data = await res.json();
+            risposta.innerText = data.risposta || data.errore;
+        }
+    </script>
+</body>
+</html>
+"""
+
+@app.route('/')
+def home():
+    return render_template_string(HTML_PAGE)
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    try:
+        data = request.get_json()
+        user_message = data.get('message', '')
+        
+        headers = {
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "model": MODEL,
+            "messages": [
+                {"role": "system", "content": NUCLEO_FORMATIVO},
+                {"role": "user", "content": user_message}
+            ]
+        }
+        
+        response = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=30)
+        response.raise_for_status()
+        
+        risultato = response.json()
+        risposta_ai = risultato['choices'][0]['message']['content']
+        
+        return jsonify({"risposta": risposta_ai})
+    
+    except Exception as e:
+        return jsonify({"errore": f"Errore: {str(e)}"}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
