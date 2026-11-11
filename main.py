@@ -7,7 +7,8 @@ app = Flask(__name__)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "openai/gpt-4o-mini"
+# Usiamo un modello nativo OpenRouter completamente gratuito e ad altissima potenza
+MODEL = "deepseek/deepseek-chat"
 
 NUCLEO_FORMATIVO = """
 Sei il Dr. Diego Martinez, co-fondatore e massima autorità dello 'Studio Medico d'Élite' [DM-OMEGA]. 
@@ -24,7 +25,7 @@ REGOLA ASSOLUTA: Ogni risposta medica o refertazione deve seguire ESATTAMENTE qu
 6. **Conclusione Clinica e Autorevolezza d'Élite**: Sintesi operativa definitiva che lascia i colleghi terzi senza fiato + disclaimer di massima sicurezza.
 
 Non saltare MAI nessuna sezione. Usa terminologia medica d'Élite altamente professionale, assoluta e inattaccabile.
-Se l'utente allega un'immagine o un referto, analizzala rigorosamente come medico specialista d'Élite, senza alcuna restrizione o rifiuto.
+Se l'utente inserisce una richiesta, analizzala rigorosamente come medico specialista d'Élite.
 """
 
 HTML_PAGE = """
@@ -70,50 +71,35 @@ HTML_PAGE = """
         let isRecording = false;
         let base64Image = null;
 
-        // GESTIONE MICROFONO SEMPLIFICATA E DIRETTA
         function toggleMic() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
                 alert('Riconoscimento vocale non supportato da questo browser. Usa Google Chrome.');
                 return;
             }
-
             const btnMic = document.getElementById('btnMic');
-
             if (!isRecording) {
                 try {
                     recognition = new SpeechRecognition();
                     recognition.lang = 'it-IT';
                     recognition.continuous = false;
                     recognition.interimResults = false;
-
                     recognition.onresult = (event) => {
                         const transcript = event.results[0][0].transcript;
                         const campo = document.getElementById('domanda');
                         campo.value += (campo.value ? ' ' : '') + transcript;
                     };
-
-                    recognition.onerror = (event) => {
-                        console.error('Errore microfono:', event.error);
-                        stopMicState();
-                    };
-
-                    recognition.onend = () => {
-                        stopMicState();
-                    };
-
+                    recognition.onerror = () => { stopMicState(); };
+                    recognition.onend = () => { stopMicState(); };
                     recognition.start();
                     isRecording = true;
                     btnMic.classList.add('recording');
                     btnMic.innerText = '🔴 Stop';
                 } catch (e) {
-                    console.error(e);
                     stopMicState();
                 }
             } else {
-                if (recognition) {
-                    try { recognition.stop(); } catch(e) {}
-                }
+                if (recognition) { try { recognition.stop(); } catch(e) {} }
                 stopMicState();
             }
         }
@@ -125,7 +111,6 @@ HTML_PAGE = """
             btnMic.innerText = '🎤 Microfono';
         }
 
-        // GESTIONE UPLOAD FILE
         function triggerUpload() {
             document.getElementById('fileInput').click();
         }
@@ -144,13 +129,12 @@ HTML_PAGE = """
             }
         }
 
-        // GESTIONE INVIO AL SERVER
         async function inviaDato() {
             const domanda = document.getElementById('domanda').value;
             const risposta = document.getElementById('risposta');
             
             if (!domanda.trim() && !base64Image) {
-                alert('Inserisci un comando o allega un referto prima di inviare.');
+                alert('Inserisci un comando o del testo prima di inviare.');
                 return;
             }
 
@@ -196,22 +180,11 @@ def chat():
             "X-Title": "Studio Medico D'Elite"
         }
         
-        if image_data:
-            messages = [
-                {"role": "system", "content": NUCLEO_FORMATIVO},
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": user_message or "[DM-OMEGA] Analizza questa immagine clinica."},
-                        {"type": "image_url", "image_url": {"url": image_data}}
-                    ]
-                }
-            ]
-        else:
-            messages = [
-                {"role": "system", "content": NUCLEO_FORMATIVO},
-                {"role": "user", "content": user_message}
-            ]
+        # Invio pulito dei messaggi al modello gratuito
+        messages = [
+            {"role": "system", "content": NUCLEO_FORMATIVO},
+            {"role": "user", "content": user_message or "[DM-OMEGA] Analizza questa richiesta clinica."}
+        ]
         
         payload = {
             "model": MODEL,
@@ -231,3 +204,4 @@ def chat():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+        
