@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "google/gemini-flash-1.5"
+MODEL = "openai/gpt-3.5-turbo"
 
 NUCLEO_FORMATIVO = """
 Sei il Dr. Martinez, Studio Medico d'Élite.
