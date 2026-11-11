@@ -29,7 +29,7 @@ HTML_PAGE = """
     <div class="container">
         <h1>STUDIO MEDICO D'ÉLITE [DM-OMEGA]</h1>
         <div style="background: #1a1a1a; border: 1px solid #00ffff; padding: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; font-size: 13px;">
-            SISTEMA DI DIAGNOSTICA NEURALE & ASENP-2026 — DR. DIEGO MARTINEZ
+            SISTEMA DI DIAGNOSTICA NEURALE & ASENP-2026 — DR. MARTINEZ
         </div>
         <textarea id="domanda" rows="4" placeholder="Immetti [DM-OMEGA] seguito da comando o richiesta clinica..."></textarea>
         <img id="preview" />
@@ -106,7 +106,7 @@ HTML_PAGE = """
         }
 
         async function inviaDato() {
-            const domanda = document.getElementById('domanda').value;
+            const domanda = document.getElementById('domanda'].value;
             const risposta = document.getElementById('risposta');
             
             if (!domanda.trim() && !base64Image) {
@@ -121,7 +121,7 @@ HTML_PAGE = """
             try {
                 const res = await fetch('/chat', {
                     method: 'POST',
-                    headers: {'Content-Type": "application/json'},
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
@@ -146,7 +146,6 @@ def chat():
         user_message = data.get('message', 'Nessun testo inserito')
         has_image = bool(data.get('image', None))
         
-        # Generatore dinamico basato sull'input reale del Dr. Diego Martinez
         analisi_img = "Acquisizione visiva di prodotto/integratore o reperto strumentale completata con successo nel bunker." if has_image else "Analisi basata esclusivamente sul testo clinico immesso."
         
         risposta_ai = f"""=== STUDIO MEDICO D'ÉLITE [DM-OMEGA] ===
@@ -180,7 +179,7 @@ DIAGNOSTICA NEURALE & ASENP-2026 — DR. DIEGO MARTINEZ
         return jsonify({"risposta": risposta_ai})
     
     except Exception as e:
-        return jsonify({"errore": f"Errore nel bunker [DM-OMEGA]: {str(e)}"} ), 500
+        return jsonify({"errore": f"Errore nel bunker [DM-OMEGA]: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
