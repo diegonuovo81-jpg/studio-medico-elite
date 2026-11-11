@@ -1,4 +1,4 @@
-import os
+ioimport os
 import base64
 from flask import Flask, request, jsonify, render_template_string
 
@@ -182,4 +182,4 @@ DIAGNOSTICA NEURALE & ASENP-2026 — DR. DIEGO MARTINEZ
         return jsonify({"errore": f"Errore nel bunker [DM-OMEGA]: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000).......
+    app.run(host='0.0.0.0', port=5000)
