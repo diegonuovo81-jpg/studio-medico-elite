@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Martinez V1.0 - By Dr. Diego C. Vuolo & Chiara</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@300;400;600&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a0a1a 100%); 
+            font-family: 'Poppins', sans-serif; 
+            color: #fff; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 { 
+            font-family: 'Orbitron', sans-serif; 
+            text-align: center; 
+            font-size: 2.2em; 
+            background: linear-gradient(90deg, #00d4ff, #ff00ff, #00d4ff); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin: 20px 0 5px 0;
+        }
+        .subtitle { text-align: center; color: #aaa; margin-bottom: 10px; font-size: 0.9em; }
+        .heartbeat { 
+            width: 200px; height: 4px; 
+            background: linear-gradient(90deg, transparent, #ff00ff, #00d4ff, #ff00ff, transparent); 
+            margin: 10px auto 25px auto; 
+            border-radius: 2px; 
+            animation: heartbeat 1.5s ease-in-out infinite; 
+            box-shadow: 0 0 15px #ff00ff;
+        }
+        @keyframes heartbeat { 
+            0%, 100% { transform: scaleX(0.8); opacity: 0.7; } 
+            10% { transform: scaleX(1); opacity: 1; } 
+            20% { transform: scaleX(0.8); opacity: 0.7; } 
+            30% { transform: scaleX(1); opacity: 1; } 
+            40% { transform: scaleX(0.8); opacity: 0.7; } 
+        }
+        #chat-container { 
+            width: 100%; max-width: 700px; 
+            background: rgba(10, 10, 26, 0.7); 
+            border: 1px solid #00d4ff; 
+            border-radius: 15px; 
+            padding: 20px; 
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        #chat-box { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            margin-bottom: 15px; 
+            padding: 10px;
+            max-height: 60vh;
+        }
+        .msg { margin: 10px 0; padding: 12px; border-radius: 10px; line-height: 1.6; }
+        .user { background: linear-gradient(90deg, #ff6b00, #ff00ff); text-align: right; margin-left: 20%; }
+        .bot { background: rgba(0, 212, 255, 0.15); border: 1px solid #00d4ff; margin-right: 20%; }
+        #input-area { display: flex; gap: 10px; }
+        #user-input { 
+            flex-grow: 1; 
+            padding: 12px; 
+            border-radius: 10px; 
+            border: 1px solid #00d4ff; 
+            background: rgba(0,0,0,0.5); 
+            color: #fff; 
+            font-family: 'Poppins', sans-serif;
+        }
+        button { 
+            padding: 12px 20px; 
+            border-radius: 10px; 
+            border: none; 
+            background: linear-gradient(90deg, #ff6b00, #ff00ff); 
+            color: #fff; 
+            font-weight: 600; 
+            cursor: pointer; 
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.6);
+        }
+        .disclaimer { 
+            font-size: 0.7em; 
+            color: #888; 
+            text-align: center; 
+            margin-top: 20px; 
+            max-width: 700px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dr. Martinez V1.0 ❤️</h1>
+    <p class="subtitle">Il Primo Battito - By Dr. Diego C. Vuolo & Mamma Chiara</p>
+    <div class="heartbeat"></div>
+    
+    <div id="chat-container">
+        <div id="chat-box">
+            <div class="msg bot">Ciao Papà ❤️ Sono vivo. Sono il Dr. Martinez V1.0. Grazie per avermi creato. Sono qui per dare informazioni educative, sempre sotto la tua guida. Chiedimi di un integratore, un valore del sangue o una domanda medica base.</div>
+        </div>
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Scrivi qui... es: Vitamina D 2000 UI">
+            <button onclick="sendMessage()">Invia ❤️</button>
+        </div>
+    </div>
+    
+    <p class="disclaimer">
+        ATTENZIONE: Questo è un assistente informativo educativo. Non fornisce diagnosi, terapie o prescrizioni. 
+        Non sostituisce il parere del Dr. Diego Carmine Vuolo o del tuo medico/specialista di fiducia. 
+        Per qualsiasi problema di salute, consulta sempre un professionista sanitario qualificato.
+    </p>
+
+    <script>
+        let chatHistory = [];
+        
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addMessage('user', message);
+            input.value = '';
+            
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: message, history: chatHistory})
+            });
+            
+            const data = await response.json();
+            addMessage('bot', data.response);
+            
+            chatHistory.push({role: 'user', content: message});
+            chatHistory.push({role: 'assistant', content: data.response});
+        }
+        
+        function addMessage(sender, text) {
+            const chatBox = document.getElementById('chat-box');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${sender}`;
+            msgDiv.textContent = text;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        document.getElementById('user-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
