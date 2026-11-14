@@ -1,1 +1,1 @@
-web: gunicorn Profilo:app
+  web: gunicorn app:app
